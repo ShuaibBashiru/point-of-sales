@@ -34,6 +34,10 @@ Check the root folder
 
 ![Sign In](screenshots/signin.png)
 
+**Dashboard**
+
+![Sign In](screenshots/dashboard.png)
+
 **Upload**
 
 ![Upload items](screenshots/uploaditems.png)
