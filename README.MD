@@ -36,7 +36,7 @@ Check the root folder
 
 **Upload**
 
-![Upload items](screenshots/upload.png)
+![Upload items](screenshots/uploaditems.png)
 
 **POS**
 
