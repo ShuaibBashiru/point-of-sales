@@ -32,12 +32,16 @@ Check the root folder
 
 **Sign In**
 
-![New Enrolment](screenshots/signin.png)
+![Sign In](screenshots/signin.png)
+
+**Upload**
+
+![Upload items](screenshots/upload.png)
 
 **POS**
 
-![Users](screenshots/pos.png)
+![Point of Sales](screenshots/pos.png)
 
 **Invoice**
 
-![New Enrolment](screenshots/invoice.png)
+![Invoice](screenshots/invoice.png)
