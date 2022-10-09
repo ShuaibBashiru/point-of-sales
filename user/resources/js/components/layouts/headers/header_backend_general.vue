@@ -72,7 +72,7 @@ export default {
         usersession: [],
         displayName: '',
         changes: '',
-        userProfilePassport: '/assets/passports/avatar.png',
+        userProfilePassport: '/assets/icons/avatar.png',
         sidebarMenu: [
         ],
      

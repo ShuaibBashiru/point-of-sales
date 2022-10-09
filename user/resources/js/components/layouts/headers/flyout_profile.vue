@@ -36,7 +36,7 @@ export default {
         errors: [],
         usersession: [],
         changes: '',
-        profilePic: '/assets/passports/avatar.png',
+        profilePic: '/assets/icons/avatar.png',
         sidebarMenu: [
         
         ],

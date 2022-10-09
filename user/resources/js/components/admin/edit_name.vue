@@ -137,7 +137,7 @@ export default {
         formNote: '',
         errors: [],
         form_success: [],
-        userProfilePassport: '/assets/passports/avatar.png',
+        userProfilePassport: '/assets/icons/avatar.png',
         parameters:{
             lastname: '',
             firstname: '',

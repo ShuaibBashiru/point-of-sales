@@ -56,7 +56,7 @@ class AuthController extends Controller
                 $getemail = base64_encode($user->email_one);
                 $role_id = base64_encode($user->role_id);
                 $checkHomePage = $this->getHomePage($user->role_id);
-                $homepage =  $checkHomePage['status'] ? $landing['data']['routeLink'] : '/noaccess';
+                $homepage =  $checkHomePage['status'] ? $checkHomePage['data']['routeLink'] : '/noaccess';
                 $user['generated_id'] = base64_encode(base64_encode($user['generated_id']));
                 $secure = [
                     'userid' => $getid,

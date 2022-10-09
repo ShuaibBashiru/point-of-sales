@@ -117,7 +117,7 @@ export default {
         errors: [],
         form_success: [],
         genders: [],
-        userProfilePassport: '/assets/passports/avatar.png',
+        userProfilePassport: '/assets/icons/avatar.png',
         parameters:{
             gender_id: '',
             generated_id: '',

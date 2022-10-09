@@ -58,9 +58,10 @@
         <tr>
             <th scope="col-1" class="text-truncate text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
             <th scope="col" class="text-truncate" @click="sortOrder('invoice_number')" title="">Invoice Number <i class="bi bi-sort-down float-end"></i></th>
-            <th scope="col" class="text-truncate text-center" title="soldTo">Customer</th>
-            <th scope="col" class="text-truncate text-center" title="attendant">Attendant</th>
-            <th scope="col" class="text-truncate text-center" title="date_created">Date Created</th>
+            <th scope="col" class="text-truncate" title="soldTo">Customer</th>
+            <th scope="col" class="text-truncate" title="attendant">Attendant</th>
+            <th scope="col" class="text-truncate" title="total price">Total</th>
+            <th scope="col" class="text-truncate" title="date_created">Date Created</th>
             <th scope="col" class="text-truncate text-center" title="Action"> <i class="bi bi-three-dots"></i></th>
         </tr>
         </thead>
@@ -71,6 +72,7 @@
             <td class="col text-truncate" v-html="d.invoice_number ? d.invoice_number : ''"></td>
             <td class="col text-truncate" v-html="d.soldTo ? d.soldTo : ''"></td>
             <td class="col text-truncate" v-html="d.attendant ? d.attendant : ''"></td>
+            <td class="col text-truncate" v-html="d.totalPrice ? d.totalPrice : ''"></td>
             <td class="col text-truncate" v-html="d.date_created ? d.date_created +' '+ d.time_created : ''"></td>
             <td class="col text-center">
                 <button type="button" class="btn btn-outline-primary" @click="print(d.invoice_number)" :disabled="disabled"> Print <i class="bi bi-printer"></i></button> 

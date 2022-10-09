@@ -143,7 +143,7 @@ export default {
         countries: [],
         states: [],
         cities: [],
-        userProfilePassport: '/assets/passports/avatar.png',
+        userProfilePassport: '/assets/icons/avatar.png',
         parameters:{
             country_id: '161',
             state_id: '306',

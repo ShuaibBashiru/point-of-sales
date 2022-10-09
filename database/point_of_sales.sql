@@ -124,3 +124,11 @@ SELECT max(t1.id) as id, t1.invoice_number, max(t1.soldTo) as soldTo,
 inner join sales_items as t2 on t2.id = t1.item_id 
 left join admin_record as t3 on t3.id = t1.created_by
 left join user_record as t4 on t4.id = t1.customer_id group by t1.invoice_number
+
+CREATE VIEW vw_sales_record_2 AS 
+SELECT max(t1.id) as id, t1.invoice_number, max(t1.soldTo) as soldTo,
+ max(t1.payment_type) as payment_type, max(t3.lastname) as attendant, sum(t1.amount) as totalPrice,
+ max(t4.lastname) as customerName, max(t1.date_created) as date_created, max(t1.time_created) 
+ as time_created FROM sales_records_2 as t1 
+left join admin_record as t3 on t3.id = t1.created_by
+left join user_record as t4 on t4.id = t1.customer_id group by t1.invoice_number

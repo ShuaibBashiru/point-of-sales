@@ -134,7 +134,7 @@ export default {
         errors: [],
         form_success: [],
         max_year: new Date().getFullYear() - 16,
-        userProfilePassport: '/assets/passports/avatar.png',
+        userProfilePassport: '/assets/icons/avatar.png',
         parameters:{
             yob: '',
             mob: '',

@@ -139,7 +139,7 @@ export default {
         errors: [],
         form_success: [],
         phoneCodes: phonecodes.codes,
-        userProfilePassport: '/assets/passports/avatar.png',
+        userProfilePassport: '/assets/icons/avatar.png',
         parameters:{
             phone_one: '',
             phone_two: '',
