@@ -38,7 +38,6 @@ firstname varchar(50) NOT NULL,
   phone_one varchar(50) NOT NULL UNIQUE,
   phone_two varchar(50) DEFAULT '',
   phone_code varchar(30) NOT NULL DEFAULT '+234',
-  passport_url text null, 
   gender_id INT NOT NULL DEFAULT 0,
   dob VARCHAR(11) NOT NULL DEFAULT 0,
   mob VARCHAR(11) NOT NULL DEFAULT 0,
@@ -80,7 +79,6 @@ firstname varchar(50) NOT NULL,
   phone_one varchar(50) NOT NULL UNIQUE,
   phone_two varchar(50) DEFAULT '',
   phone_code varchar(30) NOT NULL DEFAULT '+234',
-  passport_url text null, 
   gender_id INT NOT NULL DEFAULT 0,
   dob VARCHAR(11) NOT NULL DEFAULT 0,
   mob VARCHAR(11) NOT NULL DEFAULT 0,
@@ -368,12 +366,12 @@ CREATE TABLE user_documents (
   FOREIGN KEY(document_id) REFERENCES documents(id)
 );
 
-CREATE TABLE user_passports (
+CREATE TABLE user_passport (
   id int NOT NULL,
   userid int NOT NULL DEFAULT 0,
   passport_user varchar(80) NOT NULL,
   passport_name varchar(80) NOT NULL DEFAULT 'avatar.png',
-  passport_url text, 
+  file_url text, 
   status_id int NOT NULL DEFAULT 1,
   generated_id varchar(80) NOT NULL UNIQUE DEFAULT '0',
   created_by int NOT NULL DEFAULT 0,
@@ -723,7 +721,12 @@ DELIMITER ;
 
 CREATE VIEW vw_user_record AS 
 SELECT t1.*, t2.file_url FROM user_record as t1 
-left join user_passport as t2 on t2.userid = t1.id
+left join user_passport as t2 on t2.userid = t1.id;
+
+CREATE VIEW vw_admin_record AS SELECT t1.*, t2.file_url 
+FROM admin_record as t1 
+left join admin_passport as t2 on t2.userid = t1.id;
+
 
 
 INSERT INTO `statuses` (`id`, `status_name`, `status_description`, `generated_id`, `created_by`, `modified_by`, `date_created`, `time_created`, `updated_at`, `deleted_status`, `deleted_by`) 
