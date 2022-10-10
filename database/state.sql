@@ -17,7 +17,6 @@ CREATE TABLE `states` (
   PRIMARY KEY(id)
 );
 
-
 INSERT INTO `states` (`id`, `state_name`, `country_id`, `latitude`, `longitude`, `status_id`, `generated_id`, `created_by`, `modified_by`, `date_created`, `time_created`, `updated_at`, `deleted_status`, `deleted_by`) VALUES
 (1, 'Southern Nations, Nationalities, and Peoples\' Region', 70, '6.51569110', '36.95410700', 1, '', 0, 0, 0, '0000-00-00', '2022-06-27 08:12:21', 0, 0),
 (2, 'Somali Region', 70, '6.66122930', '43.79084530', 1, '', 0, 0, 0, '0000-00-00', '2022-06-27 08:12:21', 0, 0),
