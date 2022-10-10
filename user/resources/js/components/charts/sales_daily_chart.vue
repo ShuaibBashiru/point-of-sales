@@ -50,7 +50,7 @@
       </div>
       <div class="row overflow-hidden m-0 mt-2 mb-2">
         <div class="col-md-12">
-          <h4 class="mt-4"> <span class="" v-text="valueConverter(totalPrice)"></span> <br/> <small class="fs-6">YTD</small> </h4>
+          <h4 class="mt-4"> <span class="" v-text="valueConverter(totalPrice)"></span> <br/> <small class="fs-6">Today</small> </h4>
               <hr>
           <h4 class="mt-4"> <span class="" v-text="totalItems"></span> <br/> <small class="fs-6">Total orders</small> </h4>
     </div>
