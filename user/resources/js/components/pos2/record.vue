@@ -15,8 +15,7 @@
         <div class="col-md-7 d-flex justify-content-end dropdown">
         <div class="mt-1 mb-2">
         <button class="btn btn-outline-primary" title="Refresh" @click="getRecords()"><i class="bi-arrow-clockwise" style="font-size: 1rem;"></i></button>
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newRoleModal">New <i class="bi bi-plus-circle"></i></button>
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="dropdown" aria-expanded="false">Action <i class="bi bi-chevron-double-down"></i></button>
+        <a type="button" class="btn btn-outline-primary" href="portal"> Make order <i class="bi bi-plus-circle"></i></a>
 </div>
 </div>
 

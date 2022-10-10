@@ -71,11 +71,17 @@
       </div>
        <div class="row overflow-hidden m-0 mt-2 mb-2">
         <div class="col-md-12">
+            <section v-if="info.length > 0">
             <GChart class="chart" 
-            type="ColumnChart" 
-            :data="chartSummary" 
-            :resizeDebounce="500"
-            :options="chartOptions.summary" />
+              type="ColumnChart" 
+              :data="chartSummary" 
+              :resizeDebounce="500"
+              :options="chartOptions.summary" />
+           </section>
+           <section v-else>
+            <p class="text-center text-white blinker">Fetching...</p>
+           </section>
+          
         </div>
       </div>
     </div>

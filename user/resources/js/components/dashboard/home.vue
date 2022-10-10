@@ -30,10 +30,17 @@
             </div>
             
       <!-- Chart -->
-      <div class="row">
+      <div class="row mt-3">
             <div class="col-md-12">
               <!-- Chart component here -->
                     <sales-chart />
+            </div>
+            </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+              <!-- Chart component here -->
+                    <!-- <users-chart /> -->
             </div>
             </div>
     </div>

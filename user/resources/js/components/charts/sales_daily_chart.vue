@@ -50,9 +50,9 @@
       </div>
       <div class="row overflow-hidden m-0 mt-2 mb-2">
         <div class="col-md-12">
-              <h4 class="mt-4"> <span class="" v-text="valueConverter(totalPrice)"></span> <br/> <small class="fs-6">YTD</small> </h4>
+          <h4 class="mt-4"> <span class="" v-text="valueConverter(totalPrice)"></span> <br/> <small class="fs-6">YTD</small> </h4>
               <hr>
-              <h4 class="mt-4"> <span class="" v-text="totalItems"></span> <br/> <small class="fs-6">Total orders</small> </h4>
+          <h4 class="mt-4"> <span class="" v-text="totalItems"></span> <br/> <small class="fs-6">Total orders</small> </h4>
     </div>
     </div>
     </div>
@@ -70,19 +70,21 @@
 
       <div class="row overflow-hidden m-0 mt-2 mb-2">
         <div class="col-md-12">
+           <section v-if="info.length > 0">
             <GChart class="chart" 
-            type="ColumnChart" 
-            :data="chartDailyFLows" 
-            :resizeDebounce="500"
-            :options="chartOptions.dailyFLows" />
+              type="ColumnChart" 
+              :data="chartDailyFLows" 
+              :resizeDebounce="500"
+              :options="chartOptions.dailyFLows" />
+           </section>
+           <section v-else>
+            <p class="text-center text-white blinker">Fetching...</p>
+           </section>
         </div>
       </div>
     </div>
     </div>
   </div>
-
-    <hr class="border border-3 border-primary"/>
-
 </div>
 </template>
 <style scoped>
@@ -128,7 +130,7 @@ export default {
         chartItemFLows: [],
         chartDailyFLows: [],
         chartOptions: {
-        chartTitle: "This month",
+        chartTitle: "This Month Report",
         summary: {
           header: 'Summary in Year',
           title: '',
