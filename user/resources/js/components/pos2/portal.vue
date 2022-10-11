@@ -269,7 +269,7 @@ export default {
         var getItemElement = document.getElementById('product-item'+position).id;
         var itemName = $('#'+getItemElement+' .itemName').val();
         var amount = $('#'+getItemElement+ ' .amount').val();
-        if(itemName=='' || amount == 0 || amount == ''){
+        if(itemName=='' || amount == ''){
             validInput -= 1;
         }else{
             validInput += 1;
