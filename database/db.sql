@@ -653,6 +653,175 @@ CREATE TABLE verification_tokens(
   PRIMARY KEY(id)
 );
 
+
+CREATE TABLE post_category(
+  id int NOT NULL AUTO_INCREMENT,
+  category_name varchar(60) NOT NULL UNIQUE DEFAULT 0,
+  descriptions text,
+  created_by int NOT NULL DEFAULT 0,
+  modified_by int NOT NULL DEFAULT 0,
+  status_id int NOT NULL DEFAULT 1,
+  generated_id varchar(80) NOT NULL UNIQUE DEFAULT '0',
+  date_created date NOT NULL,
+  time_created time NOT NULL,
+  updated_at TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_status INT NOT NULL DEFAULT 0,
+  deleted_by INT NOT NULL DEFAULT 0,
+  PRIMARY KEY(id)
+);
+
+
+CREATE TABLE posts(
+  id int NOT NULL AUTO_INCREMENT,
+  post_title text not null,
+  post_summary text not null,
+  post_body text,
+  post_link text not null,
+  display_media_status int NOT NULL DEFAULT 0,
+  read_more_status int NOT NULL DEFAULT 0,
+  read_more_title varchar(50) NOT NULL,
+  read_more_type varchar(50) NOT NULL,
+  media_height varchar(50) NOT NULL,
+  media_width varchar(50) NOT NULL,
+  media_measure varchar(50) NOT NULL,
+  display_media text,
+  media_type varchar(50) NOT NULL,
+  category_id int NOT NULL DEFAULT 0,
+  created_by int NOT NULL DEFAULT 0,
+  modified_by int NOT NULL DEFAULT 0,
+  status_id int NOT NULL DEFAULT 1,
+  generated_id varchar(80) NOT NULL UNIQUE DEFAULT '0',
+  date_created date NOT NULL,
+  time_created time NOT NULL,
+  updated_at TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_status INT NOT NULL DEFAULT 0,
+  deleted_by INT NOT NULL DEFAULT 0,
+  FOREIGN KEY(category_id) REFERENCES post_category(id),
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE course_category(
+  id int NOT NULL AUTO_INCREMENT,
+  category_name varchar(60) NOT NULL UNIQUE DEFAULT 0,
+  descriptions text,
+  created_by int NOT NULL DEFAULT 0,
+  modified_by int NOT NULL DEFAULT 0,
+  status_id int NOT NULL DEFAULT 1,
+  generated_id varchar(80) NOT NULL UNIQUE DEFAULT '0',
+  date_created date NOT NULL,
+  time_created time NOT NULL,
+  updated_at TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_status INT NOT NULL DEFAULT 0,
+  deleted_by INT NOT NULL DEFAULT 0,
+  PRIMARY KEY(id)
+);
+
+
+CREATE TABLE courses_tbl(
+  id int NOT NULL AUTO_INCREMENT,
+  post_title text not null UNIQUE DEFAULT 'No title',
+  post_summary text not null,
+  post_body text,
+  post_link text not null,
+  display_media_status int NOT NULL DEFAULT 0,
+  read_more_status int NOT NULL DEFAULT 0,
+  read_more_title varchar(50) NOT NULL,
+  read_more_type varchar(50) NOT NULL,
+  media_height varchar(50) NOT NULL,
+  media_width varchar(50) NOT NULL,
+  media_measure varchar(50) NOT NULL,
+  display_media text,
+  media_type varchar(50) NOT NULL,
+  category_id int NOT NULL DEFAULT 0,
+  created_by int NOT NULL DEFAULT 0,
+  modified_by int NOT NULL DEFAULT 0,
+  status_id int NOT NULL DEFAULT 1,
+  generated_id varchar(80) NOT NULL UNIQUE DEFAULT '0',
+  date_created date NOT NULL,
+  time_created time NOT NULL,
+  updated_at TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_status INT NOT NULL DEFAULT 0,
+  deleted_by INT NOT NULL DEFAULT 0,
+  FOREIGN KEY(category_id) REFERENCES course_category(id),
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE media_tbl(
+  id int NOT NULL AUTO_INCREMENT,
+  media_title text null,
+  media_link text not null,
+  media_height varchar(50) NOT NULL,
+  media_width varchar(50) NOT NULL,
+  media_measure varchar(50) NOT NULL,
+  media_type varchar(50) NOT NULL,
+  created_by int NOT NULL DEFAULT 0,
+  modified_by int NOT NULL DEFAULT 0,
+  status_id int NOT NULL DEFAULT 1,
+  generated_id varchar(80) NOT NULL UNIQUE DEFAULT '0',
+  date_created date NOT NULL,
+  time_created time NOT NULL,
+  updated_at TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_status INT NOT NULL DEFAULT 0,
+  deleted_by INT NOT NULL DEFAULT 0,
+  PRIMARY KEY(id)
+);
+
+
+CREATE TABLE app_settings(
+  id int NOT NULL AUTO_INCREMENT,
+  company_name varchar(100),
+  site_name varchar(100) not null,
+  slogan varchar(100),
+  mailing_address varchar(100),
+  email_one varchar(100),
+  email_two varchar(100),
+  phone_one varchar(100),
+  phone_two varchar(100),
+  facebook varchar(100),
+  linkedin varchar(100),
+  youtube varchar(100),
+  twitter varchar(100),
+  office_address varchar(100),
+  state_name varchar(100),
+  country_name varchar(100),
+  copyright varchar(100),
+  logo_link text,
+  descriptions text,
+  key_words varchar(100),
+  site_status varchar(100),
+  status_description varchar(100),
+  created_by int NOT NULL DEFAULT 0,
+  modified_by int NOT NULL DEFAULT 0,
+  status_id int NOT NULL DEFAULT 1,
+  generated_id varchar(80) NOT NULL UNIQUE DEFAULT '0',
+  date_created date NOT NULL,
+  time_created time NOT NULL,
+  updated_at TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_status INT NOT NULL DEFAULT 0,
+  deleted_by INT NOT NULL DEFAULT 0,
+  PRIMARY KEY(id)
+);
+
+
+CREATE TABLE notification_tbl(
+  id int NOT NULL AUTO_INCREMENT,
+  title varchar(80) NOT NULL,
+  descriptions text,
+  recipient varchar(80) not null DEFAULT 'All',
+  created_by int NOT NULL DEFAULT 0,
+  modified_by int NOT NULL DEFAULT 0,
+  status_id int NOT NULL DEFAULT 1,
+  generated_id varchar(80) NOT NULL UNIQUE DEFAULT '0',
+  date_created date NOT NULL,
+  expire_date date NOT NULL,
+  time_created time NOT NULL,
+  updated_at TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_status INT NOT NULL DEFAULT 0,
+  deleted_by INT NOT NULL DEFAULT 0,
+  PRIMARY KEY(id)
+);
+
+
 -- Triggers
 -- Triggers user_passports
 --
@@ -719,13 +888,27 @@ $$
 DELIMITER ;
 
 
-CREATE VIEW vw_user_record AS 
-SELECT t1.*, t2.file_url FROM user_record as t1 
-left join user_passport as t2 on t2.userid = t1.id;
+CREATE VIEW vw_user_record AS SELECT t1.*, t3.firstname as createdByName, t2.file_url 
+FROM user_record as t1 
+left join user_passport as t2 on t2.userid = t1.id 
+left join admin_record as t3 on t3.id = t1.created_by;
 
-CREATE VIEW vw_admin_record AS SELECT t1.*, t2.file_url 
+
+CREATE VIEW vw_admin_record AS SELECT t1.*, t3.firstname as createdByName, t2.file_url 
 FROM admin_record as t1 
-left join admin_passport as t2 on t2.userid = t1.id;
+left join admin_passport as t2 on t2.userid = t1.id 
+left join admin_record as t3 on t3.id = t1.created_by;
+
+CREATE VIEW vw_posts AS SELECT t1.*, t2.category_name, t3.status_name 
+FROM posts as t1 
+left join post_category as t2 on t2.id = t1.category_id
+left join statuses as t3 on t3.id = t1.status_id;
+
+CREATE VIEW vw_courses AS SELECT t1.*, t4.firstname as createdByName, t2.category_name, t3.status_name 
+FROM courses_tbl as t1 
+left join course_category as t2 on t2.id = t1.category_id
+left join statuses as t3 on t3.id = t1.status_id
+left join admin_record as t4 on t4.id = t1.created_by;
 
 
 
