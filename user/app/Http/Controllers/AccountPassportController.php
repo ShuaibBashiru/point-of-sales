@@ -30,6 +30,25 @@ class AccountPassportController extends Controller
             return $data;
         }
     }
+    public function getUpdatedData($userid){
+        $query = Account::from('vw_admin_record as t1')
+                                ->where('t1.personal_id', '=', $userid)
+                                ->get(['t1.id', 't1.lastname', 't1.role_id', 't1.file_url', 't1.generated_id', 't1.firstname', 't1.othername', 't1.email_one'])
+                                ->first();
+        if($query){
+            $data=[
+                'status'=> true,
+                'data'=> $query,
+            ];
+            return $data;
+        }else{
+            $data=[
+                'status'=> false,
+                'data'=> '',
+            ];
+            return $data;
+        }
+    }
     public function fileExist($userid){
         $query = AccountPassport::where('deleted_status', '=', '0')
                                     ->where('userid', '=', $userid)
@@ -51,7 +70,7 @@ class AccountPassportController extends Controller
         public function passport(Request $request){
             $request->validate([
                 'personal_id' => 'required|string|max:30|min:6',
-                'filename' => 'required|max:2000|mimes:jpg',
+                'upload_file' => 'required|max:2000|mimes:jpg',
             ]);
             try {
                 $exist = false;
@@ -61,20 +80,22 @@ class AccountPassportController extends Controller
                 $d = new dateTime();
                 $generated_id = str_shuffle($d->format('Ymdhis'));
                 $userid  = strtolower($request->input('personal_id'));
-                $file = $request->file('filename');
-                $filename = $file->hashName();
+                $file = $request->file('upload_file');
+                $upload_file = $file->hashName();
                 $extension = $file->extension();
                 $dir = 'public/passports/admin';
-                $path = Storage::putFileAs($dir, new File($file), $filename);
-                $filepath = $dir.'/'.$filename;
+                $path = Storage::putFileAs($dir, new File($file), $upload_file);
+                $filepath = $dir.'/'.$upload_file;
                 $url = Storage::url($filepath);
+        $domain = request()->getSchemeAndHttpHost();
+        $url = $domain.$url;
                 $size = Storage::size($filepath);
                 $dimensions = getimagesize($file);
                 $userData = $this->getData($userid);
                 $record = [
                     "userid" => $userData['data']['id'],
                     "generated_id" => $generated_id,
-                    "file_name" => $filename,
+                    "file_name" => $upload_file,
                     "file_size" => $size,
                     "file_width" => $dimensions[0]? $dimensions[0] : '0',
                     "file_height" => $dimensions[1]? $dimensions[1] : '0',
@@ -87,7 +108,7 @@ class AccountPassportController extends Controller
                     "updated_at" => $d->format("Y-m-d h:i:s"),
                 ];
                 $recordUpdate = [
-                    "file_name" => $filename,
+                    "file_name" => $upload_file,
                     "file_size" => $size,
                     "file_width" => $dimensions[0]? $dimensions[0] : '0',
                     "file_height" => $dimensions[1]? $dimensions[1] : '0',
@@ -117,11 +138,13 @@ class AccountPassportController extends Controller
                     }
         
                 if ($successful) {
+                    $userData = $this->getUpdatedData($userid);
                     $returnData = [
                         "title" => "Successful",
                         "status" => "success",
                         "statusmsg" => "success",
                         "msg" => "Successfully updated. Reloading the changes...",
+                        "userInfo" => $userData['data'],
                         "redirect" => "",
                     ];
                 }else{

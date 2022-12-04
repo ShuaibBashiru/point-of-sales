@@ -115,20 +115,18 @@ class PosController extends Controller
         $returnData = '';
         $result = [];
         $query = PointOfSales::from('vw_sales_record')
+                                ->orderBy('date_created', 'DESC')
                                 ->get();
        
         if (count($query) > 0) {
-            foreach ($query as $row) {
-                $row['generated_id'] = base64_encode(base64_encode($row['generated_id']));
-                array_push($result, $row);
-            };
+             // 
             $returnData = [
                 "title" => "Successful",
                 "status" => "success",
                 "statusmsg" => "success",
                 "msg" => "",
                 "redirect" => "",
-                "info" => $result,
+                "info" => $query,
                 "sales" => $sales['data'],
 
             ];
@@ -269,14 +267,12 @@ try {
     $d = new dateTime();
     $row = [
         "modified_by" => base64_decode($getSession['userid']),
-         
-        
         "status_id" => $request->input('status'),
     ];
     $list = $request->input('selectedList');
     foreach ($list as $id) {
     array_push($records, $row);
-    $newid = base64_decode(base64_decode($id));
+    $newid = $id;
     $update = PointOfSales::where('generated_id', '=', $newid)
                             ->where('status_id', '<>', $row['status_id'])
                                 ->update($row);
@@ -348,8 +344,6 @@ try {
         $d = new dateTime();
         $row = [
             "modified_by" => base64_decode($getSession['userid']),
-             
-            
             "status_id" => $request->input('status'),
         ];
         $id = base64_decode(base64_decode($request->input('id')));
@@ -413,12 +407,11 @@ public function trash(Request $request)
         $successful = false;
         $getSession = $request->session()->get('securedata');
         $d = new dateTime();
-        $id = $request->input('id');
-        $id = base64_decode(base64_decode($id));
+        $id = base64_decode(base64_decode($request->input('id')));
         $row = [
             "deleted_by" => base64_decode($getSession['userid']),
             "deleted_status" => 1,
-            "routeLink" => 'deleted::'.$id.'::'.$request->input('routeLink'),
+            "routeLink" => 'deleted::'.$request->input('routeLink'),
         ];
         
     if ($this->checkBeforeDelete($id, 0)) {

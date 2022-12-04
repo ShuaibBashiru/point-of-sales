@@ -6,31 +6,25 @@
     <server-alert :server_message="server_message" />
     <a href="#" id="topLink"></a>
     <div class="row">
-        <div class="col-md-5 ps-3">
+        <div class="col-md-5 ps-2">
         <div class="mt-1 mb-2">
             <h5 class="mt-2 ms-0 text-muted"><i class="bi bi-chevron-left" onclick="history.back()" title="Go back" role="button"></i> <span v-text="pageName"></span></h5>
         </div>
         </div>
         
 <div class="col-md-7 d-flex justify-content-end dropdown pe-3">
-        <div class="mt-1 mb-2">
-    
+    <div class="mt-1 mb-2">
     <button type="button" class="btn btn-success" data-bs-toggle="dropdown" aria-expanded="false"> Download  <i class="bi bi-download"></i></button>
-         <div class="dropdown-menu w-75 mt-0 pt-0" style="width: 200px !important;">
+    <div class="dropdown-menu w-75 mt-0 pt-0" style="width: 200px !important;">
         <ul class="list-unstyled pb-1 border-bottom" onclick="event.stopPropagation()">
         <li class="mb-2">
-        <p class="align-items-center ps-2 p-1 mb-0 collapsed dropdown-item" data-bs-toggle="collapse" data-bs-display="static" data-bs-target="#drop1" aria-expanded="false">
-        <i class="bi bi-file-pdf me-1"></i> <span>PDF </span> <i class="bi bi-chevron-down float-end"></i></p>
-        <div class="collapse" id="drop1">
-        <ul class="btn-toggle-nav ms-2 list-unstyled fw-normal pb-1 small">
-        <li class="p-1 ps-3"><a class="text-dark" target="_blank" :href="'../profile/pdf/'+info.generated_id"><i class="bi bi-person"></i> Account profile </a></li>
-        </ul>
-        </div>
+        <p class="align-items-center ps-2 p-1 mb-0">
+        <a class="text-dark" target="_blank" :href="'../profile/pdf/'+info.generated_id"><i class="bi bi-file-pdf me-1"></i> <span>Account profile </span></a>
+        </p>
         </li>
     </ul>
   </div>
-    <a  :href="'../manage/'+info.generated_id" class="btn btn-outline-primary"> Manage  <i class="bi bi-gear"></i></a>
-  
+    <a :href="'../manage/'+info.generated_id" class="btn btn-outline-primary"> Update  <i class="bi bi-gear"></i></a>
 </div>
 </div>
 </div>

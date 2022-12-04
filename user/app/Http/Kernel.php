@@ -51,6 +51,10 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\ConfirmReLogIn::class,
         ],
 
+        'CheckMaintenance' => [
+            \App\Http\Middleware\CheckMaintenance::class,
+        ],
+
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',

@@ -11,7 +11,7 @@
 <span class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 <i class="bi bi-list" style="font-size: 2rem; color: black;"></i>
 </span>
-<a class="navbar-brand p-0 m-0 me-3 ms-md-2 text-success" style="color:#f8b818;" href="/app/"><img src="/assets/icons/logo.jpg" class="menuLogo" alt="logo"> &nbsp; {{settings.appname}}</a>
+<a class="navbar-brand p-0 m-0 me-3 ms-md-2 text-success" style="color:#f8b818;" href="/app/"><img src="/assets/icons/logo.jpg" class="logoSize" alt="logo"> &nbsp; {{settings.site_name}}</a>
 <ul class="navbar-nav p-0 m-3 mb-0 mt-0 d-md-none">
     <li class="nav-item"> <a href="/app/contactus" class="text-dark"> <i class="bi bi-question-circle" role="img" aria-label="Help" style="font-size: 1.6rem;"></i> <span class="d-md-none"></span>  </a>  </li>
 </ul>
@@ -47,12 +47,12 @@
 
 
 <script>
-import appsettings from '../../json/myapp.json'
+import appsettings from '/storage/settings/app.json'
 export default {
   name: "auth_header",
         data(){
         return {
-        settings: appsettings.settings,
+        settings: appsettings,
         Alert: 'hide',
         alertTitle: '',
         showOverlay: false,

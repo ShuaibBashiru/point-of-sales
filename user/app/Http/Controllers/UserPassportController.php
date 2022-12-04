@@ -51,7 +51,7 @@ class UserPassportController extends Controller
         public function passport(Request $request){
             $request->validate([
                 'personal_id' => 'required|string|max:30|min:6',
-                'filename' => 'required|max:2000|mimes:jpg',
+                'upload_file' => 'required|max:2000|mimes:jpg',
             ]);
             try {
                 $exist = false;
@@ -61,20 +61,22 @@ class UserPassportController extends Controller
                 $d = new dateTime();
                 $generated_id = str_shuffle($d->format('Ymdhis'));
                 $userid  = strtolower($request->input('personal_id'));
-                $file = $request->file('filename');
-                $filename = $file->hashName();
+                $file = $request->file('upload_file');
+                $upload_file = $file->hashName();
                 $extension = $file->extension();
                 $dir = 'public/passports/user';
-                $path = Storage::putFileAs($dir, new File($file), $filename);
-                $filepath = $dir.'/'.$filename;
+                $path = Storage::putFileAs($dir, new File($file), $upload_file);
+                $filepath = $dir.'/'.$upload_file;
                 $url = Storage::url($filepath);
+        $domain = request()->getSchemeAndHttpHost();
+        $url = $domain.$url;
                 $size = Storage::size($filepath);
                 $dimensions = getimagesize($file);
                 $userData = $this->getData($userid);
                 $record = [
                     "userid" => $userData['data']['id'],
                     "generated_id" => $generated_id,
-                    "file_name" => $filename,
+                    "file_name" => $upload_file,
                     "file_size" => $size,
                     "file_width" => $dimensions[0]? $dimensions[0] : '0',
                     "file_height" => $dimensions[1]? $dimensions[1] : '0',
@@ -87,7 +89,7 @@ class UserPassportController extends Controller
                     "updated_at" => $d->format("Y-m-d h:i:s"),
                 ];
                 $recordUpdate = [
-                    "file_name" => $filename,
+                    "file_name" => $upload_file,
                     "file_size" => $size,
                     "file_width" => $dimensions[0]? $dimensions[0] : '0',
                     "file_height" => $dimensions[1]? $dimensions[1] : '0',
@@ -107,7 +109,7 @@ class UserPassportController extends Controller
                         }
                     }else{
                         Storage::delete($dir.'/'.$fileexist['data']['file_name']);
-                        $query = AdminPassport::where('userid', '=', $record['userid'])
+                        $query = UserPassport::where('userid', '=', $record['userid'])
                                             ->update($recordUpdate);
                         if ($query) {
                         $successful = true;
@@ -122,7 +124,7 @@ class UserPassportController extends Controller
                         "status" => "success",
                         "statusmsg" => "success",
                         "msg" => "Successfully updated. Reloading the changes...",
-                        "redirect" => "",
+                        "redirect" => "/list",
                     ];
                 }else{
                     $returnData = [

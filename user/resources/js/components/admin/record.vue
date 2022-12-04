@@ -106,35 +106,27 @@
     <table class="table table-hover table-bordered" id="listTable">
         <thead>
         <tr>
-            <th scope="col-1" class="text-truncate text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
+            <th scope="col-1" class="text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
             <th scope="col" class="text-truncate" @click="sortOrder('personal_id')" title="">ID <i class="bi bi-sort-down float-end"></i></th>
             <th scope="col" class="text-truncate" @click="sortOrder('lastname')" title="">Name <i class="bi bi-sort-down float-end"></i></th>
             <th scope="col" class="text-truncate" @click="sortOrder('email_one')" title="">Email <i class="bi bi-sort-down float-end"></i></th>
             <th scope="col" class="text-truncate" @click="sortOrder('status_id')" title="Status"> Status <i class="bi bi-sort-down float-end"></i></th>
-            <th scope="col" class="text-truncate text-center" title="Action"> <i class="bi bi-three-dots"></i></th>
+            <th scope="col" class="text-truncate" @click="sortOrder('createdByName')"> Created by </th>
+            <th scope="col" class="text-truncate text-center" title="Action"> Manage </th>
         </tr>
         </thead>
         <tbody>
 
         <tr v-for="(d, index) in info.slice(startNumber, endNumber)" :key="index">
-            <td class="col-1 text-truncate text-center"><input type="checkbox" id="" :value="d.generated_id" v-model="parameters.selectedList" name="checkbox" @change="checkBoxOnChange"></td>
-            <td class="col text-truncate" v-html="d.personal_id ? d.personal_id : ''"></td>
-            <td class="col text-truncate" v-html="d.lastname + ' ' + d.firstname + ' ' + d.othername"></td>
-            <td class="col text-truncate" v-html="d.email_one ? d.email_one : ''"></td>
-            <td class="col text-truncate text-center" v-if="d.status_name=='Active'"><small class="text-dark" v-text="d.status_name"></small></td>
-            <td class="col text-truncate text-center" v-else><span class="text-danger" v-text="d.status_name"></span></td>
-            <td class="col text-center">
-            <div class="dropdown dropstart">
-                <span class="bi bi-caret-down ps-2" data-bs-toggle="dropdown" :id="'dropdownMenuButton'+index" aria-expanded="false"></span>
-            <div class="dropdown-menu w-75 mt-0 pt-0" :aria-labelledby="'dropdownMenuButton'+index" style="width: 200px !important;">
-            <ul class="list-unstyled pb-1 border-bottom" onclick="event.stopPropagation()">
-            <li class="mb-2 text-center bg-dark p-1 text-white" v-html="d.personal_id"></li>
-            <li class="p-1 text-danger"> <a class="link ps-2 mb-2 dropdown-item" :href="'profile/'+d.generated_id"> <i class="bi bi-link"></i> <span>Manage</span></a>
-            </li>
-            </ul>
-            </div>
-            </div>
-            <!-- Dropdown -->
+            <td class="col-1 text-center"><input type="checkbox" id="" :value="d.generated_id" v-model="parameters.selectedList" name="checkbox" @change="checkBoxOnChange"></td>
+            <td class="" v-html="d.personal_id ? d.personal_id : ''"></td>
+            <td class="" v-html="d.lastname + ' ' + d.firstname + ' ' + d.othername"></td>
+            <td class="" v-html="d.email_one ? d.email_one : ''"></td>
+            <td class="text-center" v-if="d.status_name=='Active'"><small class="text-dark" v-text="d.status_name"></small></td>
+            <td class="text-center" v-else><span class="text-danger" v-text="d.status_name"></span></td>
+            <td class=""><span class="" v-text="d.createdByName"></span></td>
+            <td class="text-center">
+            <a class="link btn btn-sm btn-primary" :href="'profile/'+encodeData(d.generated_id)"> <span class="bi bi-gear"></span></a>
             </td>
         </tr>
             
@@ -163,7 +155,7 @@ export default {
    props: ['server_message'],
     data (){
         return{
-        pageName: 'Admins',
+        pageName: 'Admin',
         alertTitle: '',
         alertMsg: '',
         showOverlay: false,
@@ -218,13 +210,17 @@ export default {
         
     methods:{
 
+    encodeData: function(data){
+        var decode = btoa(btoa(data));
+        return decode;
+    },
     exportToExcel: function(){
             if (this.info.length > 0) {
             var pageName = this.pageName
             var ext = '.xlsx'
-            var filename = pageName+ext
+            var upload_file = pageName+ext
             var d = new Date()
-            filename = d.toDateString()+'_'+d.toLocaleTimeString()+'_'+filename
+            upload_file = d.toDateString()+'_'+d.toLocaleTimeString()+'_'+upload_file
             var info = this.info
             for (let index = 0; index < info.length; index++) {
                 delete info[index].generated_id
@@ -232,7 +228,7 @@ export default {
             var worksheet = XLSX.utils.json_to_sheet(info)
             var workbook = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(workbook, worksheet, "Records")
-            XLSX.writeFile(workbook, filename)
+            XLSX.writeFile(workbook, upload_file)
             }else{
 
             $("#alertDanger").toast('show')

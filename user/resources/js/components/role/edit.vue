@@ -2,7 +2,7 @@
 <div class="">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
 <div class="container-fluid">
-<div class="modal fade" id="editRoleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hkeyden="true">
+<div class="modal fade" id="editRoleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hiden="true">
 <div class="modal-dialog ps-md-3 pe-md-3">
     <div class="modal-content">
       <div class="modal-header">
@@ -37,7 +37,7 @@
         <div class="m-1 mt-3">
                    <label for="role_name" class="text-muted">Title</label>
                 <div class="input-group">
-                    <input type="text" v-model="parameters.role_name" @keyup="oneSpace('role_name')" id="role_name" minlength="3" maxlength="40" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Enter here" :disabled="disabled">
+                    <input type="text" v-model="parameters.role_name" @keyup="oneSpace('role_name')" id="role_name" minlength="3" maxlength="200" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Enter here" :disabled="disabled">
                 </div>
                 <span class="text-danger" for="" v-if="errors.role_name && errors.role_name != ''"><small> <span v-text="errors.role_name[0]"></span> </small></span>
                 </div>
@@ -150,6 +150,7 @@ export default {
      cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         this.errors = '';
@@ -158,12 +159,13 @@ export default {
             this.disabled = false;
             this.alertMsg='You have not made any changes on this page.'
         }else if(this.validated && this.checkIfChanged()) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated && this.checkIfChanged()){
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
         }else{
             this.validated = false
             this.disabled = false;
@@ -177,7 +179,7 @@ export default {
             var newString = string.replace(/^\s+|\s+$/gm, ' ')
             this.parameters[key] = newString
     },
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;

@@ -56,7 +56,7 @@ class AdminMenuGroupController extends Controller
         $returnData = '';
         $result = [];
         $query = AdminMenuGroup::from('admin_app_menu_group as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->where('t1.generated_id', $id)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
                     ->get(['t1.group_name', 't1.group_icon', 't1.menu_bar', 't1.generated_id', 't1.updated_at'])->first();
@@ -104,25 +104,22 @@ class AdminMenuGroupController extends Controller
         $returnData = '';
         $result = [];
         $query = AdminMenuGroup::from('admin_app_menu_group as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
-                    ->orderBy('t1.id', 'DESC')
+                    ->orderBy('t1.updated_at', 'DESC')
                     ->get(['t1.group_name', 't1.group_icon', 't1.menu_bar', 't1.descriptions', 
                     't1.date_created', 't1.status_id', 't1.id', 't2.status_name', 't1.generated_id', 
                     't1.updated_at']);
        
         if (count($query) > 0) {
-            foreach ($query as $row) {
-                $row['generated_id'] = base64_encode(base64_encode($row['generated_id']));
-                array_push($result, $row);
-            };
+             // 
             $returnData = [
                 "title" => "Successful",
                 "status" => "success",
                 "statusmsg" => "success",
                 "msg" => "",
                 "redirect" => "",
-                "info" => $result,
+                "info" => $query,
             ];
         }else{
             $returnData = [
@@ -177,8 +174,8 @@ class AdminMenuGroupController extends Controller
             $record = [
                 "generated_id" => $generated_id,
                 "group_name" => ucfirst(strtolower($request->input('group_name'))),
-                "group_icon" => ucfirst(strtolower($request->input('icon'))),
-                "menu_bar" => ucfirst(strtolower($request->input('menu_bar'))),
+                "group_icon" => $request->input('group_icon'),
+                "menu_bar" => $request->input('menu_bar'),
                 "created_by" => base64_decode($getSession['userid']),
                 "date_created" => $d->format('Y-m-d'),
                 "time_created" => $d->format('h:i:s'),
@@ -229,7 +226,7 @@ class AdminMenuGroupController extends Controller
 
     public function update_record(Request $request){
         $request->validate([
-            'group_name' => 'required|unique:admin_app_menu_group|max:100|min:2',
+            'group_name' => 'required|max:100|min:2',
         ]);
         try {
             $exist = false;
@@ -240,6 +237,8 @@ class AdminMenuGroupController extends Controller
             $d = new dateTime();
             $record = [
                 "group_name" => ucfirst(strtolower($request->input('group_name'))),
+                "group_icon" => $request->input('group_icon'),
+                "menu_bar" => $request->input('menu_bar'),
                 "created_by" => base64_decode($getSession['userid']),
                 "modified_by" => base64_decode($getSession['userid']),
                 "updated_at" => $d->format("Y-m-d h:i:s"),
@@ -301,14 +300,12 @@ try {
     $d = new dateTime();
     $row = [
         "modified_by" => base64_decode($getSession['userid']),
-         
-        
         "status_id" => $request->input('status'),
     ];
     $list = $request->input('selectedList');
     foreach ($list as $id) {
     array_push($records, $row);
-    $newid = base64_decode(base64_decode($id));
+    $newid = $id;
     $update = AdminMenuGroup::where('generated_id', '=', $newid)
                             ->where('status_id', '<>', $row['status_id'])
                                 ->update($row);
@@ -380,8 +377,6 @@ try {
         $d = new dateTime();
         $row = [
             "modified_by" => base64_decode($getSession['userid']),
-             
-            
             "status_id" => $request->input('status'),
         ];
         $id = base64_decode(base64_decode($request->input('id')));
@@ -445,12 +440,11 @@ public function trash(Request $request)
         $successful = false;
         $getSession = $request->session()->get('securedata');
         $d = new dateTime();
-        $id = $request->input('id');
-        $id = base64_decode(base64_decode($id));
+        $id = base64_decode(base64_decode($request->input('id')));
         $row = [
             "deleted_by" => base64_decode($getSession['userid']),
             "deleted_status" => 1,
-            "group_name" => 'deleted::'.$id.'::'.$request->input('group_name'),
+            "group_name" => 'deleted::'.$request->input('group_name'),
         ];
         
     if ($this->checkBeforeDelete($id, 0)) {

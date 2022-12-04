@@ -2,23 +2,23 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\PageAccessController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SignupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\EmailVerifyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\AccessGroupController;
 use App\Http\Controllers\AdminMenuGroupController;
 use App\Http\Controllers\AdminMenuController;
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\RolePermissionsController;
-use App\Http\Controllers\AccessGroupsController;
 use App\Http\Controllers\AdminPagesController;
 use App\Http\Controllers\AdminAccessController;
 use App\Http\Controllers\StatusController;
@@ -31,8 +31,15 @@ use App\Http\Controllers\AdminPassportController;
 use App\Http\Controllers\AccountPassportController;
 use App\Http\Controllers\SavingsController;
 use App\Http\Controllers\ChartsController;
+use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\PosController2;
+use App\Http\Controllers\PostCategoryController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CourseCategoryController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\SalesItemsController;
 /*
 |--------------------------------------------------------------------------
@@ -44,31 +51,46 @@ use App\Http\Controllers\SalesItemsController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// Site
 
-// pages
-Route::group(['middleware'=>['revalidate']], function(){
+// Check maintenance
+Route::get('/app/maintenance', [SettingController::class, 'maintenance'])->name('maintenance');
+
+Route::group(['middleware'=>['revalidate', 'CheckMaintenance']], function(){
     // Home controller
-    Route::get('', [HomeController::class, 'index'])->name('home');
-    // Route::get('/verifyemail', [TokenForEmailVerifyController::class, 'mailing'])->name('verifyemail');
-    // Route::get('/verify_email', [TokenForEmailVerifyController::class, 'index'])->name('verify_email');
-    //Auth Controller
-    Route::post('/login', [AuthController::class, 'login'])->name('login_request');
-    Route::get('/forgotpassword', [PasswordResetController::class, 'forgotpassword'])->name('forgotpassword');
-    Route::get('/password/new/{id}/{userid}', [PasswordResetController::class, 'newPasswordLink'])->name('newPasswordLink');
-    Route::post('/password_reset', [PasswordResetController::class, 'mailing'])->name('account_password_reset');
-    Route::post('/password/change', [PasswordResetController::class, 'changePassword'])->name('account_change_password');
-
-    // Session Controller
-    Route::get('/app/logout', [SessionController::class, 'logout'])->name('logout');
-    // Sign up Controller
+    Route::get('', [HomeController::class, 'web'])->name('home');
+    Route::get('/contactus', [HomeController::class, 'contact'])->name('contactus');
+    Route::get('/terms', [HomeController::class, 'terms'])->name('terms');
+    Route::get('/aboutus', [HomeController::class, 'about'])->name('aboutus');
+    Route::get('/courses', [HomeController::class, 'courses'])->name('courses');
+    Route::get('/course', [HomeController::class, 'course_view'])->name('course');
+    Route::get('/post', [HomeController::class, 'post_view'])->name('post');
     });
 
+    Route::group(['middleware'=>['revalidate']], function(){
+        Route::post('/login', [AuthController::class, 'login'])->name('login_request');
+        Route::get('/forgotpassword', [PasswordResetController::class, 'forgotpassword'])->name('forgotpassword');
+        Route::get('/password/new/{id}/{userid}', [PasswordResetController::class, 'newPasswordLink'])->name('newPasswordLink');
+        Route::post('/password_reset', [PasswordResetController::class, 'mailing'])->name('account_password_reset');
+        Route::post('/password_reset_new', [NewPasswordController::class, 'mailing'])->name('new_account_password_reset');
+        Route::post('/password/change', [PasswordResetController::class, 'changePassword'])->name('account_change_password');
+    
+        // Session Controller
+        Route::get('/app/logout', [SessionController::class, 'logout'])->name('logout');
+    
+        });
 // End of signup groups
 Route::group(['middleware'=>['revalidate']], function(){
     Route::get('/signup-guide', [SignupController::class, 'index'])->name('signup_guide');
-    Route::get('/signup', [SignupController::class, 'signup'])->name('signup');
+    Route::get('/app/signup', [SignupController::class, 'signup'])->name('signup_page');
+    Route::get('/app/signup', [SignupController::class, 'message'])->name('signup_message');
+    Route::post('/signup/create', [SignupController::class, 'create'])->name('signup_request');
     Route::get('/signup-verify', [SignupController::class, 'signup'])->name('signup_verify');
 });
+
+Route::get('/app/auth', [AuthenticationController::class, 'index'])->name('authenticate');
+Route::post('/auth/authenticate', [AuthenticationController::class, 'access']);
+
 
 Route::group(['middleware'=>['revalidate', 'confirmReLogIn']], function(){
     Route::get('/signin', [AuthController::class, 'index'])->name('signin');
@@ -95,10 +117,13 @@ Route::get('/city/list', [CitiesController::class, 'list_items'])->name('list_ci
 
 
 // Authentication and Security // ? Revalidate: This take care of browser from cathing protected routes
-Route::middleware(['revalidate', 'customAuthentication'])->group(function(){
+Route::middleware(['revalidate', 'customAuthentication', 'accessCheck'])->group(function(){
 
 // Dashboard controller
 Route::get('/app/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/app/settings/manage', [SettingController::class, 'manage'])->name('manage_setting');
+Route::post('/settings/create', [SettingController::class, 'create'])->name('update_setting');
+
 
 // Passport Controller
 Route::post('/user/passport', [UserPassportController::class, 'passport'])->name('upload_user_passport');
@@ -164,7 +189,6 @@ Route::delete('/admin/trash', [AdminController::class, 'trash'])->name('trash_ad
 Route::get('/admin/role/update', [AdminController::class, 'update_role'])->name('update_admin_role');
 Route::get('/app/admin/profile/pdf/{id}', [AdminController::class, 'profilePdf'])->name('pdf_admin_profile');
 
-
 // Account controller
 Route::get('/app/account/create', [AccountController::class, 'createRecord'])->name('create_account');
 Route::get('/app/account/manage/{id}', [AccountController::class, 'manage'])->name('manage_account');
@@ -189,8 +213,6 @@ Route::get('/account/manage/status', [AccountController::class, 'manage_status']
 Route::delete('/account/trash', [AccountController::class, 'trash'])->name('trash_account_request');
 Route::get('/app/account/profile/pdf/{id}', [AccountController::class, 'profilePdf'])->name('pdf_account_profile');
 
-
-
 // Role
 Route::get('/app/role/list', [RoleController::class, 'list'])->name('list_role');
 Route::get('/app/role/manage/{id}', [RoleController::class, 'manage'])->name('manage_role');
@@ -200,17 +222,6 @@ Route::get('/role/status/updatebatch', [RoleController::class, 'status_update_ba
 Route::delete('/role/trash', [RoleController::class, 'trash'])->name('trash_role_request');
 Route::post('/role/update', [RoleController::class, 'update_record'])->name('update_role_request');
 Route::get('/role/manage/status', [RoleController::class, 'manage_status'])->name('manage_role_status');
-
-// Permission group
-Route::get('/app/accessgroup/list', [AccessGroupController::class, 'list'])->name('list_accessgroup');
-Route::get('/app/accessgroup/manage/{id}', [AccessGroupController::class, 'manage'])->name('manage_accessgroup');
-Route::get('/accessgroup/list', [AccessGroupController::class, 'listAll'])->name('list_accessgroup_request');
-Route::post('/accessgroup/create', [AccessGroupController::class, 'create'])->name('create_accessgroup_request');
-Route::get('/accessgroup/status/updatebatch', [AccessGroupController::class, 'status_update_batch'])->name('update_accessgroup_status_request');
-Route::post('/accessgroup/update', [AccessGroupController::class, 'update_record'])->name('update_accessgroup_request');
-Route::get('/accessgroup/manage/status', [AccessGroupController::class, 'manage_status'])->name('manage_accessgroup_status_request');
-Route::delete('/accessgroup/trash', [AccessGroupController::class, 'trash'])->name('trash_accessgroup_request');
-
 
 // Access
 Route::get('/app/access/upload', [AccessController::class, 'uploadBatch'])->name('upload_access');
@@ -256,6 +267,70 @@ Route::post('/adminmenu/update', [AdminMenuController::class, 'update_record'])-
 Route::get('/adminmenu/manage/status', [AdminMenuController::class, 'manage_status'])->name('manage_status_adminmenu_request');
 Route::delete('/adminmenu/trash', [AdminMenuController::class, 'trash'])->name('trash_adminmenu_request');
 
+// Post category
+Route::get('/app/postcategory/list', [PostCategoryController::class, 'list'])->name('list_postcategory');
+Route::get('/postcategory/list', [PostCategoryController::class, 'listAll'])->name('list_postcategory_request');
+Route::post('/postcategory/create', [PostCategoryController::class, 'create'])->name('create_postcategory_request');
+Route::get('/postcategory/status/updatebatch', [PostCategoryController::class, 'status_update_batch'])->name('update_postcategory_status_request');
+Route::delete('/postcategory/trash', [PostCategoryController::class, 'trash'])->name('trash_postcategory_request');
+Route::post('/postcategory/update', [PostCategoryController::class, 'update_record'])->name('update_postcategory_request');
+Route::get('/postcategory/record/{id}', [PostCategoryController::class, 'record'])->name('record_postcategory');
+
+// Post
+Route::get('/app/post/list', [PostController::class, 'list'])->name('list_post');
+Route::get('/app/post/manage/{id}', [PostController::class, 'manage'])->name('manage_post');
+Route::get('/app/post/edit/{id}', [PostController::class, 'edit'])->name('edit_post');
+Route::get('/app/post/create', [PostController::class, 'createRecord'])->name('create_post');
+Route::get('/post/list', [PostController::class, 'listAll'])->name('list_post_request');
+Route::post('/post/create', [PostController::class, 'create'])->name('create_post_request');
+Route::get('/post/status/updatebatch', [PostController::class, 'status_update_batch'])->name('update_post_status_request');
+Route::delete('/post/trash', [PostController::class, 'trash'])->name('trash_post_request');
+Route::post('/post/update', [PostController::class, 'update_record'])->name('update_post_request');
+Route::get('/app/post/{category}', [PostController::class, 'landing_page'])->name('landing_page');
+
+
+// Media
+Route::get('/app/media/list', [MediaController::class, 'list'])->name('list_media');
+Route::get('/app/media/manage/{id}', [MediaController::class, 'manage'])->name('manage_media');
+Route::get('/app/media/edit/{id}', [MediaController::class, 'edit'])->name('edit_media');
+Route::get('/app/media/create', [MediaController::class, 'createRecord'])->name('create_media');
+Route::get('/media/list', [MediaController::class, 'listAll'])->name('list_media_request');
+Route::post('/media/create', [MediaController::class, 'create'])->name('create_media_request');
+Route::get('/media/status/updatebatch', [MediaController::class, 'status_update_batch'])->name('update_media_status_request');
+Route::delete('/media/trash', [MediaController::class, 'trash'])->name('trash_media_request');
+Route::post('/media/update', [MediaController::class, 'update_record'])->name('update_media_request');
+
+
+// Course category
+Route::get('/app/coursecategory/list', [CourseCategoryController::class, 'list'])->name('list_coursecategory');
+Route::get('/coursecategory/list', [CourseCategoryController::class, 'listAll'])->name('list_coursecategory_request');
+Route::post('/coursecategory/create', [CourseCategoryController::class, 'create'])->name('create_coursecategory_request');
+Route::get('/coursecategory/status/updatebatch', [CourseCategoryController::class, 'status_update_batch'])->name('update_coursecategory_status_request');
+Route::delete('/coursecategory/trash', [CourseCategoryController::class, 'trash'])->name('trash_coursecategory_request');
+Route::post('/coursecategory/update', [CourseCategoryController::class, 'update_record'])->name('update_coursecategory_request');
+Route::get('/coursecategory/record/{id}', [CourseCategoryController::class, 'record'])->name('record_coursecategory');
+
+// Course
+Route::get('/app/course/list', [CourseController::class, 'list'])->name('list_course');
+Route::get('/app/course/manage/{id}', [CourseController::class, 'manage'])->name('manage_course');
+Route::get('/app/course/edit/{id}', [CourseController::class, 'edit'])->name('edit_course');
+Route::get('/app/course/create', [CourseController::class, 'createRecord'])->name('create_course');
+Route::get('/course/list', [CourseController::class, 'listAll'])->name('list_course_request');
+Route::post('/course/create', [CourseController::class, 'create'])->name('create_course_request');
+Route::get('/course/status/updatebatch', [CourseController::class, 'status_update_batch'])->name('update_course_status_request');
+Route::delete('/course/trash', [CourseController::class, 'trash'])->name('trash_course_request');
+Route::post('/course/update', [CourseController::class, 'update_record'])->name('update_course_request');
+
+// Notification
+Route::get('/app/notification/list', [NotificationController::class, 'list'])->name('list_notification');
+Route::get('/notification/list', [NotificationController::class, 'listAll'])->name('list_notification_request');
+Route::post('/notification/create', [NotificationController::class, 'create'])->name('create_notification_request');
+Route::get('/notification/status/updatebatch', [NotificationController::class, 'status_update_batch'])->name('update_notification_status_request');
+Route::delete('/notification/trash', [NotificationController::class, 'trash'])->name('trash_notification_request');
+Route::post('/notification/update', [NotificationController::class, 'update_record'])->name('update_notification_request');
+Route::get('/notification/record/{id}', [NotificationController::class, 'record'])->name('record_notification');
+
+
 // Pos
 Route::get('/app/pos/portal', [PosController::class, 'portal'])->name('pos_portal');
 Route::get('/app/pos/invoices', [PosController::class, 'list'])->name('pos_invoices');
@@ -286,8 +361,10 @@ Route::post('/salesitems/update', [SalesItemsController::class, 'update_record']
 Route::get('/salesitems/manage/status', [SalesItemsController::class, 'manage_status'])->name('manage_status_salesitems_request');
 Route::delete('/salesitems/trash', [SalesItemsController::class, 'trash'])->name('trash_salesitems_request');
 
+
 });
 
+Route::get('/noaccess', [PageAccessController::class, 'NoAccess'])->name('NoAccess');
 Route::get('/getroutes', [PageAccessController::class, 'getRoutes'])->name('get_all_routes');
 Route::get('/pagenotfound', [PageAccessController::class, 'pageNotFound'])->name('pageNotFound');
-Route::get('/noaccess', [PageAccessController::class, 'NoAccess'])->name('NoAccess');
+

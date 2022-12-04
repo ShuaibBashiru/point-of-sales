@@ -2,14 +2,13 @@
 <div class="bg">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
     <notification :alertTitle="alertTitle" :alertMsg="alertMsg"></notification>
-
 <div class="">
 <div class="container-fluid mt-5">
 <div class="row d-flex justify-content-center p-0 mt-2">
     <div class="col-md-5 mt-2 ps-md-5 pe-md-5">
       <server-alert :server_message="server_message" />
      <div class="wrap-img text-center">
-    <a class="navbar-brand p-0 m-0" href="#"><img :src="settings.logo" class="img-responsive rounded" :style="'width:'+settings.logoHeight+'; ' + 'height:'+settings.logoHeight+';'"  alt="image"> <br/> <span class="fs-4 text-primary" v-text="settings.appname"></span> </a>
+    <a class="navbar-brand p-0 m-0" href="#"><img :src="settings.logo_link" class="img-responsive rounded logoSize2" alt="Logo"> <br/> <span class="fs-4 text-white" v-text="settings.site_name"></span> </a>
      </div>
   <form @submit.prevent="signIn" role="form" class="p-2"> 
     <div class="m-1 mt-3">
@@ -43,7 +42,7 @@
       <div class="form-group mt-5 col">
      <div class="row">
        <div class="col-md-12">
-         <button type="submit" name="login" class="btn btn-primary w-100 border-0 pt-2 pb-2" v-text="button"></button></div>
+         <button type="submit" name="login" class="btn btn-primary w-100 border-0 pt-2 pb-2" v-text="button" :disabled="disabled"></button></div>
      </div>
     </div>
     </div>
@@ -53,13 +52,11 @@
 </form>
 
 <div class="row">
-  <div class="col-12"><div>
-    <!-- <p class="ps-3 text-center">I do not have an account? <a href="/app/accountinstruction" class="text-right text-primary"> Sign up </a></p> -->
-    </div></div>
   <div class="col-12">
-    <div class="row">
-      <div class="col-12 text-center"><a href="/" class="text-primary">Go back</a></div>
+    <p class="text-center text-light">I do not have an Account? <a href="/app/signup" class="text-primary text-light linkUnderlineHover"> Sign up </a></p>
     </div>
+  <div class="col-12">
+        <p class="text-center"><a href="/" class="text-light linkUnderlineHover" style="opacity:0.7;">Home</a></p>
   </div>
 </div>
 
@@ -74,13 +71,13 @@
 </div>
 </template>
 <script>
-import appsettings from '../json/myapp.json'
+import appsettings from '/storage/settings/app.json'
 export default {
   name: 'account_signin',
   props: ['server_message'],
 data(){
   return{
-      settings: appsettings.settings,
+      settings: appsettings,
       alertTitle: '',
       alertMsg: '',
       showOverlay: false,

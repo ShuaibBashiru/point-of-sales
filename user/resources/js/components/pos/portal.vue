@@ -86,15 +86,10 @@
         <tbody id="items"> 
         <tr id="product-item0" class="product-item">
         <td class="col-5 text-center">
-        <!-- <select class="form-control shadow-none itemName change" name="itemName" @change="calCulateOnChange(0)" id="0">
-                <option value="" selected>Select</option>
-                <option v-for="(d, index) in info" :value="index" :key="index" v-text="d.item_name"></option>
-            </select> -->
            <input list="icons" class="form-control shadow-none change itemName" name="itemName" @change="calCulateOnChange(0)" id="0" data-id="" placeholder="Pick item">
             <datalist id="icons">
                 <option v-for="(d, index) in info" :value="d.item_name" :key="index" v-text="d.item_name"></option>
             </datalist>
-
             </td>
             <td class="col-2 text-center">
                <input type="number" name="unitPrice" readonly id="0" class="shadow-none unitPrice form-control form-control-md form-control-sm-lg" min="50">
@@ -136,7 +131,7 @@
 </template>
 
 <script>
-import appsettings from '../json/myapp.json'
+import appsettings from '/storage/settings/app.json'
 export default {
     name: 'pointOfSale',
     props: ['server_message'],
@@ -144,7 +139,7 @@ export default {
         return{
         pageName: 'POS',
         invoice_id: '',
-        settings: appsettings.settings,
+        settings: appsettings,
         alertTitle: '',
         alertMsg: '',
         showOverlay: false,
@@ -232,6 +227,7 @@ export default {
     cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
 
     valueConverter: function(amount){
@@ -435,12 +431,15 @@ export default {
             this.errorResponse= "Please fill in the recipient name (Walk-in or Customer's name.)";
         }else{
             this.errorResponse= "";
-            this.sendForm();
-            // alert("Ready to take off")
+            this.sendPost();
         }
     },
 
-    sendForm: function(){
+    setId: function(){
+        this.invoice_id = this.parameters.invoice_number
+    },
+
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;
@@ -449,15 +448,14 @@ export default {
         for (var key in this.parameters){
         form.append(key, this.parameters[key])
         }
-    axios.post('/pos/create', form).then(response => {
+        axios.post('/pos/create', form).then(response => {
         this.button=this.btntxt;
         this.showOverlay=false;
         this.errors = '';
         if((response.status != undefined && response.status==200) && (response['data'].data.status==response['data'].data.statusmsg)){
-            this.invoice_id = this.parameters.invoice_number
             this.alertMsg=response['data'].data.msg;
             $("#alertPrimary").toast('show')
-            $("#printInvoiceModal").modal('show')
+            this.setId();
             this.neworder()
         }else if(response['data'].data.status=='failed'){
             this.alertMsg=response['data'].data.msg;

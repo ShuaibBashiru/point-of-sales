@@ -2,7 +2,7 @@
 <div class="">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
 <div class="container-fluid">
-<div class="modal fade" id="newSalesItemsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newSalesItemsModalLabel" aria-hkeyden="true">
+<div class="modal fade" id="newSalesItemsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newSalesItemsModalLabel" aria-hiden="true">
 <div class="modal-dialog ps-md-3 pe-md-3">
     <div class="modal-content">
       <div class="modal-header">
@@ -46,7 +46,7 @@
         <div class="m-1 mt-3">
                    <label for="unit_price" class="text-muted">Price</label>
                 <div class="input-group">
-                    <input type="text" v-model="parameters.unit_price" @keyup="noSpace('unit_price')" id="unit_price" minlength="2" maxlength="40" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Enter here" :disabled="disabled">
+                    <input type="text" v-model="parameters.unit_price" @keyup="noSpace('unit_price')" id="unit_price" minlength="2" maxlength="200" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Enter here" :disabled="disabled">
                 </div>
                 <span class="text-danger" for="" v-if="errors.unit_price && errors.unit_price != ''"><small> <span v-text="errors.unit_price[0]"></span> </small></span>
                 </div>
@@ -135,17 +135,20 @@ export default {
    cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         $(".toaster").toast('hide')
         this.errors = '';
         if(this.validated) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated) {
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
+            this.button = "Continue"
         }else{
             this.validated = false
             this.disabled = false;
@@ -171,7 +174,7 @@ export default {
             this.parameters[key] = newString
     },
 
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;

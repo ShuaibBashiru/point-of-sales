@@ -16,6 +16,8 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.4",
         "milon/barcode": "^9.0",
+        "symfony/http-client": "^5.4",
+        "symfony/mailgun-mailer": "^5.4",
         "twbs/bootstrap": "4.6.1"
     },
     "require-dev": {

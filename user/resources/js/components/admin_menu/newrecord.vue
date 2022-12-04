@@ -2,7 +2,7 @@
 <div class="">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
 <div class="container-fluid">
-<div class="modal fade" id="newRoleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newRoleModalLabel" aria-hkeyden="true">
+<div class="modal fade" id="newRoleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newRoleModalLabel" aria-hiden="true">
 <div class="modal-dialog ps-md-3 pe-md-3">
     <div class="modal-content">
       <div class="modal-header">
@@ -157,17 +157,20 @@ export default {
    cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         $(".toaster").toast('hide')
         this.errors = '';
         if(this.validated) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated) {
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
+            this.button = "Continue"
         }else{
             this.validated = false
             this.disabled = false;
@@ -243,7 +246,7 @@ export default {
             })
         },
 
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;

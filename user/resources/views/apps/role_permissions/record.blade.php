@@ -19,7 +19,7 @@
            
         <!-- Body component(s) -->
             <div id="contentPanel" class="col-md-10 p-0 mt-5">
-            <div class="mb-5 mt-3">
+            <div class="mb-5 mt-4">
                 
            <role_permissions :role_record="{{ session('record') ?? $record ?? json_encode('') }}"></role_permissions>
 

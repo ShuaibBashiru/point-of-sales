@@ -56,7 +56,7 @@ class RoleController extends Controller
         $returnData = '';
         $result = [];
         $query = Role::from('roles as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->where('t1.generated_id', $id)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
                     ->get(['t1.role_name', 't1.generated_id', 't1.updated_at'])->first();
@@ -104,24 +104,21 @@ class RoleController extends Controller
         $returnData = '';
         $result = [];
         $query = Role::from('roles as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
-                    ->orderBy('t1.id', 'DESC')
+                    ->orderBy('t1.updated_at', 'DESC')
                     ->get(['t1.role_name', 't1.id', 't1.descriptions', 't1.date_created',
                     't1.status_id', 't2.status_name', 't1.generated_id', 't1.updated_at']);
        
         if (count($query) > 0) {
-            foreach ($query as $row) {
-                $row['generated_id'] = base64_encode(base64_encode($row['generated_id']));
-                array_push($result, $row);
-            };
+             // 
             $returnData = [
                 "title" => "Successful",
                 "status" => "success",
                 "statusmsg" => "success",
                 "msg" => "",
                 "redirect" => "",
-                "info" => $result,
+                "info" => $query,
             ];
         }else{
             $returnData = [
@@ -152,9 +149,7 @@ class RoleController extends Controller
 
     public function checkIfRecordExist($data){
         $query = Role::where('deleted_status', '=', '0')
-                                    ->where('personal_id', '=', $data['personal_id'])
-                                    ->orWhere('email_one', '=', $data['email_one'])
-                                    ->orWhere('phone_one', '=', $data['phone_one'])
+                                    ->where('id', '=', $data['personal_id'])
                                     ->get()->first();
         if($query){
             return true;
@@ -300,14 +295,12 @@ try {
     $d = new dateTime();
     $row = [
         "modified_by" => base64_decode($getSession['userid']),
-         
-        
         "status_id" => $request->input('status'),
     ];
     $list = $request->input('selectedList');
     foreach ($list as $id) {
     array_push($records, $row);
-    $newid = base64_decode(base64_decode($id));
+    $newid = $id;
     $update = Role::where('generated_id', '=', $newid)
                             ->where('status_id', '<>', $row['status_id'])
                                 ->update($row);
@@ -379,8 +372,6 @@ try {
         $d = new dateTime();
         $row = [
             "modified_by" => base64_decode($getSession['userid']),
-             
-            
             "status_id" => $request->input('status'),
         ];
         $id = base64_decode(base64_decode($request->input('id')));
@@ -444,12 +435,11 @@ public function trash(Request $request)
         $successful = false;
         $getSession = $request->session()->get('securedata');
         $d = new dateTime();
-        $id = $request->input('id');
-        $id = base64_decode(base64_decode($id));
+        $id = base64_decode(base64_decode($request->input('id')));
         $row = [
             "deleted_by" => base64_decode($getSession['userid']),
             "deleted_status" => 1,
-            "role_name" => 'deleted::'.$id.'::'.$request->input('role_name'),
+            "role_name" => 'deleted::'.$request->input('role_name'),
         ];
         
     if ($this->checkBeforeDelete($id, 0)) {

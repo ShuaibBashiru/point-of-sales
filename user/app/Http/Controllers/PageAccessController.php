@@ -22,7 +22,7 @@ class PageAccessController extends Controller
             ];
             $url = explode('{', $route->uri());
             $url2 = explode('{', $route->getName());
-            $routeLink['routeLink'] = $url[0];
+            $routeLink['routeLink'] = $url2[0];
             array_push($record, $routeLink);
             return $record;
         });

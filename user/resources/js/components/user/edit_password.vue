@@ -6,7 +6,7 @@
     <server-alert :server_message="server_message" />
     <a href="#" id="topLink"></a>
         <div class="row">
-        <div class="col-md-5 ps-3">
+        <div class="col-md-5 ps-2">
         <div class="mt-1 mb-2">
             <h5 class="mt-2 ms-0"> <span class="bi bi-chevron-left" onclick="history.back()" role="button"></span> <span>Manage</span><span class="text-muted">/User </span> </h5>
         </div>
@@ -59,10 +59,10 @@
 
     <div class="col-md-4 mt-1">
         <div class="m-1 mt-3">
-                   <label for="lastname">Lastname<sup title="Required field">*</sup></label>
+                   <label for="lastname">Last Name<sup title="Required field">*</sup></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi-person"></i></span>
-                    <input type="text" v-model="parameters.lastname" @keyup="noSpace('lastname')" id="lastname" minlength="3" maxlength="40" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Lastname is your surname" :disabled="disabled">
+                    <input type="text" v-model="parameters.lastname" @keyup="noSpace('lastname')" id="lastname" minlength="3" maxlength="200" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Last Name/Surname" :disabled="disabled">
                 </div>
                 <span class="text-danger" for="" v-if="errors.lastname && errors.lastname != ''"><small> <span v-text="errors.lastname[0]"></span> </small></span>
                 </div>
@@ -70,10 +70,10 @@
 
         <div class="col-md-4">
                 <div class="m-1 mt-3">
-                   <label for="firstname">First name<sup title="Required field">*</sup></label>
+                   <label for="firstname">First Name<sup title="Required field">*</sup></label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi-person"></i></span>
-                    <input type="text" v-model="parameters.firstname" @keyup="noSpace('firstname')" minlength="3" maxlength="40" id="firstname" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Firstname" :disabled="disabled">
+                    <input type="text" v-model="parameters.firstname" @keyup="noSpace('firstname')" minlength="3" maxlength="200" id="firstname" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Firstname" :disabled="disabled">
                 </div>
                <span class="text-danger" for="" v-if="errors.firstname && errors.firstname != ''"><small> <span v-text="errors.firstname[0]"></span> </small></span>
                 </div>
@@ -84,7 +84,7 @@
                 <label for="othername">Other name </label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi-person"></i></span>
-                    <input type="text" v-model="parameters.othername" @keyup="noSpace('othername')" minlength="0" maxlength="40" id="othername" class="shadow-none form-control form-control-md form-control-sm-lg" placeholder="Other Name" :disabled="disabled">
+                    <input type="text" v-model="parameters.othername" @keyup="noSpace('othername')" minlength="0" maxlength="200" id="othername" class="shadow-none form-control form-control-md form-control-sm-lg" placeholder="Other Name" :disabled="disabled">
                 </div>
                 <span class="text-danger" for="" v-if="errors.othername && errors.othername != ''"><small> <span v-text="errors.othername[0]"></span> </small></span>
                 </div>
@@ -196,6 +196,7 @@ export default {
      cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         $(".toaster").toast('hide')
@@ -207,12 +208,13 @@ export default {
             this.alertMsg='You have not made any changes on this page. To go back, click on the Back button above.'
             $("#alertDanger").toast('show')
         }else if(this.validated && this.checkIfChanged()) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated && this.checkIfChanged()){
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
         }else{
             this.validated = false
             this.disabled = false;
@@ -238,7 +240,7 @@ export default {
             var newString = string.replace(/^\s+|\s+$/gm, ' ')
             this.parameters[key] = newString
     },
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;

@@ -236,7 +236,7 @@ class UserController extends Controller
         $returnData = '';
         $result = [];
         $query = User::from('user_record as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->where('t1.generated_id', $id)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
                     ->leftJoin('genders as t3', 't3.id', '=', 't1.gender_id')
@@ -291,27 +291,23 @@ class UserController extends Controller
         try {
         $returnData = '';
         $result = [];
-        $query = User::from('user_record as t1')
-                    ->where('t1.deleted_status', '=', '0')
+        $query = User::from('vw_user_record as t1')
+                    ->where('t1.deleted_status', '=', 0)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
                     ->leftJoin('genders as t3', 't3.id', '=', 't1.gender_id')
-                    ->orderBy('t1.id', 'DESC')
+                    ->orderBy('t1.updated_at', 'DESC')
                     ->get(['t1.personal_id', 'lastname', 'firstname', 'othername', 
                     'email_one', 'phone_code', 'phone_one', 'date_of_birth', 't1.date_created', 
-                    'gender_name as gender_id', 't1.status_id', 't2.status_name', 't1.generated_id', 't1.updated_at']);
+                    'gender_name as gender_id', 'createdByName', 't1.status_id', 't2.status_name', 't1.generated_id', 't1.updated_at']);
        
         if (count($query) > 0) {
-            foreach ($query as $row) {
-                $row['generated_id'] = base64_encode(base64_encode($row['generated_id']));
-                array_push($result, $row);
-            };
             $returnData = [
                 "title" => "Successful",
                 "status" => "success",
                 "statusmsg" => "success",
                 "msg" => "",
                 "redirect" => "",
-                "info" => $result,
+                "info" => $query,
             ];
         }else{
             $returnData = [
@@ -320,7 +316,6 @@ class UserController extends Controller
                 "statusmsg" => "",
                 "msg" => "No record(s) found.",
                 "info" =>"",
-
             ];
 
         }
@@ -364,7 +359,7 @@ class UserController extends Controller
         $data = $request->input('records');
         $getSession = $request->session()->get('securedata');
         $d = new dateTime();
-    $record = [
+        $record = [
             "personal_id" => '',
             "lastname" => '',
             "firstname" => '',
@@ -381,8 +376,6 @@ class UserController extends Controller
             "generated_id" => '',
             "date_created" => $d->format('Y-m-d'),
             "time_created" => $d->format('h:i:s'),
-             
-            
             "updated_at" => $d->format("Y-m-d h:i:s"),
         ];
     foreach ($data as $row) {
@@ -916,14 +909,12 @@ try {
     $d = new dateTime();
     $row = [
         "modified_by" => base64_decode($getSession['userid']),
-         
-        
         "status_id" => $request->input('status'),
     ];
     $list = $request->input('selectedList');
     foreach ($list as $id) {
     array_push($records, $row);
-    $newid = base64_decode(base64_decode($id));
+    $newid = $id;
     $update = User::where('generated_id', '=', $newid)
                             ->where('status_id', '<>', $row['status_id'])
                                 ->update($row);
@@ -995,8 +986,6 @@ try {
         $d = new dateTime();
         $row = [
             "modified_by" => base64_decode($getSession['userid']),
-             
-            
             "status_id" => $request->input('status'),
         ];
         $id = base64_decode(base64_decode($request->input('id')));
@@ -1060,14 +1049,13 @@ public function trash(Request $request)
         $successful = false;
         $getSession = $request->session()->get('securedata');
         $d = new dateTime();
-        $id = $request->input('id');
-        $id = base64_decode(base64_decode($id));
+        $id = base64_decode(base64_decode($request->input('id')));
         $row = [
             "deleted_by" => base64_decode($getSession['userid']),
             "deleted_status" => 1,
-            "personal_id" => 'deleted::'.$id.'::'.$request->input('personal_id'),
-            "email_one" => 'deleted::'.$id.'::'.$request->input('email_one'),
-            "phone_one" => 'deleted::'.$id.'::'.$request->input('phone_one'),
+            "personal_id" => 'deleted::'.$request->input('personal_id'),
+            "email_one" => 'deleted::'.$request->input('email_one'),
+            "phone_one" => 'deleted::'.$request->input('phone_one'),
         ];
         
     if ($this->checkBeforeDelete($id, 0)) {
@@ -1123,9 +1111,9 @@ public function trash(Request $request)
 
 
 public function fileInfo(){
-    $filepath = base_path()."/resources/js/components/json/myapp.json";
+    $filepath = Storage::path('public/settings/app.json');
     $json = json_decode(file_get_contents($filepath), true);
-    $settings = $json['settings'];
+    $settings = $json;
     return $settings;
 }
 
@@ -1135,31 +1123,35 @@ public function profilePdf($id){
     $id = base64_decode(base64_decode($id));
     $record = $this->record($id);
     $d = new dateTime();
+    $fileInfo=$this->fileInfo();
     $timeseries = str_shuffle($d->format('Ymdhis'));
-    $filename = $record['info']['lastname'].'_'.$record['info']['firstname']
+    $upload_file = $record['info']['lastname'].'_'.$record['info']['firstname']
     .'_'.$record['info']['personal_id'];
     $base = base_path();
-    $passport_dir = base_path().'/public/storage/passports/user';
-    $filepath = $passport_dir.'/'.$record['info']['file_name'];
+    $passport_dir = base_path().'/public/storage/passports/user/';
+    $logo_dir = base_path().'/public/storage/media/logo/';
+    $filepath = $passport_dir.$record['info']['file_name'];
     $extension = pathinfo($filepath, PATHINFO_EXTENSION);
     $image = base64_encode(file_get_contents($filepath));
-    $fileInfo=$this->fileInfo();
+    $getlogofile = explode('/', $fileInfo['logo_link']);
+    $logo = base64_encode(file_get_contents($logo_dir.end($getlogofile)));
     $data = [
         "dated" => $d->format('d-m-Y'),
         "title" => "Account Profile",
-        "headerName" => $fileInfo['headerName'],
+        "headerName" => $fileInfo['site_name'],
+        "site_logo" => $logo,
+        "owner" => $fileInfo['site_name'],
         "copyright" => $fileInfo['copyright'],
-        "owner" => $fileInfo['companyName'],
         "user_info" => $record['info'],
         "user_image" => $image,
     ];
-    $filename = $data['title'].'_'.$record['info']['lastname'].'_'.$record['info']['firstname']
+    $upload_file = $data['title'].'_'.$record['info']['lastname'].'_'.$record['info']['firstname']
     .'_'.$record['info']['personal_id'];
 
-    // return view('apps.user.userProfilePdf', compact('data'));
-    $pdf = PDF::setOptions(['defaultFont' => 'sans-serif'], ['isRemoteEnabled' => true])->loadView('apps.user.profilePdf', compact('data'));
-    return $pdf->stream($filename.'.pdf');
-}    
+    // return view('apps.account.profilePdf', compact('data'));
+    $pdf = PDF::setOptions(['defaultFont' => 'sans-serif'], ['isRemoteEnabled' => true])->loadView('apps.mail.profilePdf', compact('data'));
+    return $pdf->stream($upload_file.'.pdf');
+}       
 
 
 }

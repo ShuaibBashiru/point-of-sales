@@ -6,7 +6,7 @@
     <server-alert :server_message="server_message" />
     <a href="#" id="topLink"></a>
     <div class="row">
-        <div class="col-md-5 ps-3">
+        <div class="col-md-5 ps-2">
         <div class="mt-1 mb-2">
             <h5 class="mt-2 ms-0 text-muted"><i class="bi bi-chevron-left" onclick="history.back()" title="Go back" role="button"></i> <span v-text="pageName"></span></h5>
         </div>

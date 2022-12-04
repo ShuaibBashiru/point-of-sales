@@ -206,6 +206,7 @@ export default {
     cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         $(".toaster").toast('hide')
@@ -217,12 +218,13 @@ export default {
             this.alertMsg='You have not made any changes on this page. To go back, click on the Back button above.'
             $("#alertDanger").toast('show')
         }else if(this.validated && this.checkIfChanged()) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated && this.checkIfChanged()){
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
         }else{
             this.validated = false
             this.disabled = false;
@@ -248,7 +250,7 @@ export default {
             var newString = string.replace(/^\s+|\s+$/gm, ' ')
             this.parameters[key] = newString
     },
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;

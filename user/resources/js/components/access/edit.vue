@@ -2,7 +2,7 @@
 <div class="">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
 <div class="container-fluid">
-<div class="modal fade" id="editAccessModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editAccessModalLabel" aria-hkeyden="true">
+<div class="modal fade" id="editAccessModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editAccessModalLabel" aria-hiden="true">
 <div class="modal-dialog ps-md-3 pe-md-3">
     <div class="modal-content">
       <div class="modal-header">
@@ -37,7 +37,7 @@
         <div class="m-1 mt-3">
                    <label for="routeLink" class="text-muted">Request link</label>
                 <div class="input-group">
-                    <textarea cols="30" rows="1" v-model="parameters.routeLink" @keyup="noSpace('routeLink')" id="routeLink" minlength="3" maxlength="40" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Enter here" :disabled="disabled"></textarea>
+                    <textarea cols="30" rows="1" v-model="parameters.routeLink" @keyup="noSpace('routeLink')" id="routeLink" minlength="3" maxlength="200" class="shadow-none form-control form-control-md form-control-sm-lg" required placeholder="Enter here" :disabled="disabled"></textarea>
                 </div>
                 <span class="text-danger" for="" v-if="errors.routeLink && errors.routeLink != ''"><small> <span v-text="errors.routeLink[0]"></span> </small></span>
                 </div>
@@ -46,7 +46,7 @@
         <div class="m-1 mt-3">
                    <label for="routeName" class="text-muted">Route Name</label>
                 <div class="input-group">
-                    <textarea cols="30" rows="1" v-model="parameters.route_name" @keyup="noSpace('route_name')" id="routeName" minlength="3" maxlength="40" class="shadow-none form-control form-control-md form-control-sm-lg" placeholder="Enter here" :disabled="disabled" required></textarea>
+                    <textarea cols="30" rows="1" v-model="parameters.route_name" @keyup="noSpace('route_name')" id="routeName" minlength="3" maxlength="200" class="shadow-none form-control form-control-md form-control-sm-lg" placeholder="Enter here" :disabled="disabled" required></textarea>
                 </div>
                 <span class="text-danger" for="" v-if="errors.route_name && errors.route_name != ''"><small> <span v-text="errors.route_name[0]"></span> </small></span>
                 </div>
@@ -55,7 +55,7 @@
         <div class="m-1 mt-3">
                    <label for="title" class="text-muted">Title</label>
                 <div class="input-group">
-                    <textarea cols="30" rows="1" v-model="parameters.title" @keyup="oneSpace('title')" id="title" minlength="3" maxlength="40" class="shadow-none form-control form-control-md form-control-sm-lg" placeholder="Enter here" :disabled="disabled"></textarea>
+                    <textarea cols="30" rows="1" v-model="parameters.title" @keyup="oneSpace('title')" id="title" minlength="3" maxlength="200" class="shadow-none form-control form-control-md form-control-sm-lg" placeholder="Enter here" :disabled="disabled"></textarea>
                 </div>
                 <span class="text-danger" for="" v-if="errors.title && errors.title != ''"><small> <span v-text="errors.title[0]"></span> </small></span>
                 </div>
@@ -64,7 +64,7 @@
         <div class="m-1 mt-3">
                    <label for="descriptions" class="text-muted">Description</label>
                 <div class="input-group">
-                    <textarea cols="30" rows="1" v-model="parameters.descriptions" @keyup="oneSpace('descriptions')" id="descriptions" minlength="3" maxlength="40" class="shadow-none form-control form-control-md form-control-sm-lg" placeholder="Enter here" :disabled="disabled"></textarea>
+                    <textarea cols="30" rows="1" v-model="parameters.descriptions" @keyup="oneSpace('descriptions')" id="descriptions" minlength="3" maxlength="200" class="shadow-none form-control form-control-md form-control-sm-lg" placeholder="Enter here" :disabled="disabled"></textarea>
                 </div>
                 <span class="text-danger" for="" v-if="errors.descriptions && errors.descriptions != ''"><small> <span v-text="errors.descriptions[0]"></span> </small></span>
                 </div>
@@ -182,6 +182,7 @@ export default {
      cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         this.errors = '';
@@ -190,12 +191,13 @@ export default {
             this.disabled = false;
             this.alertMsg='You have not made any changes on this page.'
         }else if(this.validated && this.checkIfChanged()) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated && this.checkIfChanged()){
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
         }else{
             this.validated = false
             this.disabled = false;
@@ -214,7 +216,7 @@ export default {
             var newString = string.replace(/^\s+|\s+$/gm, '')
             this.parameters[key] = newString
     },
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;

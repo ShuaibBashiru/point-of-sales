@@ -2,7 +2,7 @@
 <div class="">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
 <div class="container-fluid">
-<div class="modal fade" id="newRoleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newRoleModalLabel" aria-hkeyden="true">
+<div class="modal fade" id="newRoleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newRoleModalLabel" aria-hiden="true">
 <div class="modal-dialog ps-md-3 pe-md-3">
     <div class="modal-content">
       <div class="modal-header">
@@ -43,13 +43,15 @@
             <span class="text-danger" for="" v-if="errors.group_name && errors.group_name != ''"><small> <span v-text="errors.group_name[0]"></span> </small></span>
             </div>
         </div>
+
         <div class="col-md-12 mt-1">
             <div class="m-1 mt-3">
             <label for="group_name" class="text-muted">Bar</label>
             <select v-model="parameters.menu_bar" class="form-control shadow-none" required :disabled="disabled">
             <option value="" selected>Select</option>
-            <option value="Sidebar">Sidebar</option>
-            <option value="TopMenu">Top Menu</option>
+            <option value="Admin Sidebar">Admin Sidebar</option>
+            <option value="Admin TopMenu">Top Menu</option>
+            <option value="Web Menu">Web Menu</option>
         </select>
     </div>
     </div>
@@ -57,8 +59,8 @@
             <div class="m-1 mt-3">
             <label for="group_name" class="text-muted">Icons</label>
          <div class="input-group">
-            <span class="input-group-text"><i :class="parameters.icon"></i></span>
-            <input list="icons" v-model="parameters.icon" class="form-control shadow-none" placeholder="Type or Select" required :disabled="disabled">
+            <span class="input-group-text"><i :class="parameters.group_icon"></i></span>
+            <input list="icons" v-model="parameters.group_icon" class="form-control shadow-none" placeholder="Type or Select" required :disabled="disabled">
             <datalist id="icons">
                 <option v-for="(d, index) in icons" :value="d.value" :key="index" v-text="d.iconName"></option>
             </datalist>
@@ -74,6 +76,7 @@
     </div>
     </div>
         </form>
+
 
         </div>
     </div>
@@ -124,7 +127,7 @@ export default {
         parameters:{
             group_name: '',
             menu_bar: '',
-            icon: '',
+            group_icon: '',
         },
         errors: [this.parameters],
         form_success: [],
@@ -153,17 +156,20 @@ export default {
    cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         $(".toaster").toast('hide')
         this.errors = '';
         if(this.validated) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated) {
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
+            this.button = "Continue"
         }else{
             this.validated = false
             this.disabled = false;
@@ -188,7 +194,7 @@ export default {
             var newString = string.replace(/^\s+|\s+$/gm, ' ')
             this.parameters[key] = newString
     },
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;

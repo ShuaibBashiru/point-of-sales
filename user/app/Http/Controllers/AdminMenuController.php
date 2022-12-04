@@ -56,12 +56,12 @@ class AdminMenuController extends Controller
         $returnData = '';
         $result = [];
         $query = AdminMenu::from('admin_app_menu as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->where('t1.generated_id', $id)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
                     ->leftJoin('admin_app_menu_group as t3', 't3.id', '=', 't1.group_id')
                     ->leftJoin('access_permissions as t4', 't4.id', '=', 't1.access_permission_id')
-                    ->orderBy('t1.id', 'DESC')
+                    ->orderBy('t1.updated_at', 'DESC')
                     ->get(['t4.title as menu_title', 't1.access_permission_id', 't1.link_target', 't3.group_name', 
                     't4.routeLink', 't4.descriptions', 't3.group_icon', 't1.descriptions', 't1.date_created', 
                     't1.status_id', 't1.group_id', 't1.id', 't2.status_name', 't1.generated_id', 't1.updated_at'])->first();
@@ -109,27 +109,24 @@ class AdminMenuController extends Controller
         $returnData = '';
         $result = [];
         $query = AdminMenu::from('admin_app_menu as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
                     ->leftJoin('admin_app_menu_group as t3', 't3.id', '=', 't1.group_id')
                     ->leftJoin('access_permissions as t4', 't4.id', '=', 't1.access_permission_id')
-                    ->orderBy('t1.id', 'DESC')
+                    ->orderBy('t1.updated_at', 'DESC')
                     ->get(['t4.title as menu_title', 't1.group_id', 't1.access_permission_id', 't1.link_target', 't3.group_name', 't4.routeLink', 't4.descriptions', 't3.group_icon', 't1.descriptions', 
                     't1.date_created', 't1.status_id', 't1.id', 't2.status_name', 't1.generated_id', 
                     't1.updated_at']);
        
         if (count($query) > 0) {
-            foreach ($query as $row) {
-                $row['generated_id'] = base64_encode(base64_encode($row['generated_id']));
-                array_push($result, $row);
-            };
+             // 
             $returnData = [
                 "title" => "Successful",
                 "status" => "success",
                 "statusmsg" => "success",
                 "msg" => "",
                 "redirect" => "",
-                "info" => $result,
+                "info" => $query,
             ];
         }else{
             $returnData = [
@@ -190,9 +187,10 @@ class AdminMenuController extends Controller
         $user = $this->getUserInfo($userid);
         $role_id = $user['status']==true ? $user['data']['role_id'] : 0;
         $query = AdminMenu::from('admin_app_menu as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->where('t2.status_name', '=', 'Active')
                     ->where('t5.role_id', '=', $role_id)
+                    ->where('t3.menu_bar', 'Admin Sidebar')
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
                     ->leftJoin('admin_app_menu_group as t3', 't3.id', '=', 't1.group_id')
                     ->leftJoin('access_permissions as t4', 't4.id', '=', 't1.access_permission_id')
@@ -203,17 +201,14 @@ class AdminMenuController extends Controller
                     't1.updated_at']);
        
         if (count($query) > 0) {
-            foreach ($query as $row) {
-                $row['generated_id'] = base64_encode(base64_encode($row['generated_id']));
-                array_push($result, $row);
-            };
+             // 
             $returnData = [
                 "title" => "Successful",
                 "status" => "success",
                 "statusmsg" => "success",
                 "msg" => "",
                 "redirect" => "",
-                "info" => $result,
+                "info" => $query,
             ];
         }else{
             $returnData = [
@@ -397,14 +392,12 @@ try {
     $d = new dateTime();
     $row = [
         "modified_by" => base64_decode($getSession['userid']),
-         
-        
         "status_id" => $request->input('status'),
     ];
     $list = $request->input('selectedList');
     foreach ($list as $id) {
     array_push($records, $row);
-    $newid = base64_decode(base64_decode($id));
+    $newid = $id;
     $update = AdminMenu::where('generated_id', '=', $newid)
                             ->where('status_id', '<>', $row['status_id'])
                                 ->update($row);
@@ -476,8 +469,6 @@ try {
         $d = new dateTime();
         $row = [
             "modified_by" => base64_decode($getSession['userid']),
-             
-            
             "status_id" => $request->input('status'),
         ];
         $id = base64_decode(base64_decode($request->input('id')));
@@ -541,8 +532,7 @@ public function trash(Request $request)
         $successful = false;
         $getSession = $request->session()->get('securedata');
         $d = new dateTime();
-        $id = $request->input('id');
-        $id = base64_decode(base64_decode($id));
+        $id = base64_decode(base64_decode($request->input('id')));
         $row = [
             "deleted_by" => base64_decode($getSession['userid']),
             "deleted_status" => 1,

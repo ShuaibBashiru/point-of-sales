@@ -24,7 +24,7 @@
                 </div>
         </div>
 
-            <h6 class="text-center text-muted mt-5" v-text="settings.appname">  </h6>
+            <h6 class="text-center text-muted mt-5" v-text="settings.site_name">  </h6>
 
     </div>
 
@@ -37,14 +37,14 @@
 </template>
 
 <script>
-import appsettings from '../json/myapp.json';
+import appsettings from '/storage/settings/app.json';
 export default {
     name: 'PageNotFound',
     props: ['server_message'],
     data (){
         return{
         pageName: 'Page Not Found',
-        settings: appsettings.settings,
+        settings: appsettings,
         showOverlay: false,
         info: [],
     }

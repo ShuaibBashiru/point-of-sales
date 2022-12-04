@@ -9,7 +9,7 @@
     <server-alert :server_message="server_message" />
     <a href="#" id="topLink"></a>
         <div class="row">
-        <div class="col-md-5 ps-3">
+        <div class="col-md-5 ps-2">
         <div class="mt-1 mb-2">
             <h5 class="mt-2 ms-0"> <span class="bi bi-chevron-left" onclick="history.back()" role="button"></span> <span>Manage</span><span class="text-muted">/User </span> </h5>
         </div>
@@ -208,6 +208,7 @@ export default {
      cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         $(".toaster").toast('hide')
@@ -219,12 +220,13 @@ export default {
             $("#alertDanger").toast('show')
             this.alertMsg='You have not made any changes on this page. To go back, click on the Back button above.'
         }else if(this.validated && this.checkIfChanged()) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated && this.checkIfChanged()){
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
         }else{
             this.validated = false
             this.disabled = false;
@@ -250,7 +252,7 @@ export default {
             var newString = string.replace(/^\s+|\s+$/gm, ' ')
             this.parameters[key] = newString
     },
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;

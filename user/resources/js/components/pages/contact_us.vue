@@ -63,12 +63,12 @@ font-size: 18px;
 }
 </style>
 <script>
-import appsettings from '../json/myapp.json'
+import appsettings from '/storage/settings/app.json'
 export default {
   name: 'contact_us',
     data (){
         return{
-        settings:appsettings.settings,
+        settings:appsettings,
         Alert: 'hide',
         alertTitle: '',
         showOverlay: false,

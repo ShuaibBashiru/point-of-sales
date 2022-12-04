@@ -1,7 +1,7 @@
 <template>
 <div class="">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
-<div class="modal fade" id="UserPassportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="UserPassportModalLabel" aria-hkeyden="true">
+<div class="modal fade" id="UserPassportModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="UserPassportModalLabel" aria-hiden="true">
 <div class="modal-dialog ps-md-5 pe-md-5">
     <div class="modal-content bg-dark text-white">
       <div class="modal-body mt-0 p-3 pt-2">
@@ -28,9 +28,9 @@
         <div class="col-12 text-center">
           <div class="m-1 mt-1">
             <div class="input-group">
-                <input type="file" id="file" @change="onFileSelected" class="form-control shadow-none d-none" accept=".png, .jpg, .webp, .gif" required :disabled="validated ? disabled : false">
+                <input type="file" id="file" @change="onFileSelected" class="form-control shadow-none d-none" accept=".png, .jpg, .webp, .gif" required>
             </div>
-            <span class="text-danger" for="" v-if="errors.filename && errors.filename != ''"><small> <i class="bi bi-x-circle-fill"></i> <span v-text="errors.filename[0]"></span> </small></span>
+            <span class="text-danger" for="" v-if="errors.upload_file && errors.upload_file != ''"><small> <i class="bi bi-x-circle-fill"></i> <span v-text="errors.upload_file[0]"></span> </small></span>
           </div>
       </div>
       </div>
@@ -92,7 +92,7 @@ export default {
         userProfilePassport: '/assets/icons/avatar.png',
         parameters:{
             categoryId: 1,
-            filename: '',
+            upload_file: '',
             personal_id: '',
         },
       }
@@ -121,11 +121,11 @@ export default {
           if(this.selectedFile==''){
             this.alertMsg='Please select a valid file'
           }else{
-            this.sendForm()
+            this.sendPost()
           }
         },
 
-      sendForm: function(){
+      sendPost: function(){
         this.button='Please wait...';
         this.showOverlay=true;
         this.alertMsg = '';
@@ -133,7 +133,7 @@ export default {
         for (var key in this.parameters){
         form.append(key, this.parameters[key])
         }
-        form.append('filename', this.selectedFile, this.selectedFile.name)
+        form.append('upload_file', this.selectedFile, this.selectedFile.name)
         axios.post('/user/passport', form).then(response => {
             this.button=this.btntxt;
             this.showOverlay=false;

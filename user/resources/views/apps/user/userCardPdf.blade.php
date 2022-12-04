@@ -228,7 +228,7 @@
         </div>
         <div class="row-profile">
             <div class="col-3-left">
-            <div class="mb-5 mt-3">
+            <div class="mb-5 mt-4">
                  <img 
                  class="passport"
                  src="data:image/png;base64,{{ $data['user_image'] }}"

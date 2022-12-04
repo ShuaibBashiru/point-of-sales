@@ -91,7 +91,7 @@
                 <div class="input-group">
                     <input type="file" id="file" @change="onFileSelected" class="form-control shadow-none" accept=".xlsx, .csv" required :disabled="validated ? disabled : false">
                 </div>
-                <span class="text-danger" for="" v-if="errors.filename && errors.filename != ''"><small> <i class="bi bi-x-circle-fill"></i> <span v-text="errors.filename[0]"></span> </small></span>
+                <span class="text-danger" for="" v-if="errors.upload_file && errors.upload_file != ''"><small> <i class="bi bi-x-circle-fill"></i> <span v-text="errors.upload_file[0]"></span> </small></span>
                 </div>
         </div>
   
@@ -142,9 +142,9 @@
         </thead>
         <tbody>
         <tr v-for="(d, index) in info.slice(startNumber, endNumber)" :key="index">
-            <td class="col text-truncate" v-html="d.item? d.item : '<em class=text-danger>None</em>'"></td>
-            <td class="col text-truncate" v-html="d.price? d.price : '<em class=text-danger>None</em>'"></td>
-            <td class="col text-truncate"> <strong><small v-html="d.upload_status ? d.upload_status : 'New'"></small></strong> </td>
+            <td class="" v-html="d.item? d.item : '<em class=text-danger>None</em>'"></td>
+            <td class="" v-html="d.price? d.price : '<em class=text-danger>None</em>'"></td>
+            <td class=""> <strong><small v-html="d.upload_status ? d.upload_status : 'New'"></small></strong> </td>
         </tr>
 
         </tbody>
@@ -187,7 +187,7 @@ export default {
         responseStatus: '',
         usersession: [],
         category_list: [],
-        filename: '',
+        upload_file: '',
         filterlist: '',
         search: '',
         checked: true,
@@ -212,14 +212,13 @@ export default {
         parameters:{
             records: '',
             group_id: '',
-            filename: '',
+            upload_file: '',
         },
         recordType: 'Preview of the selected file.',
     }
     },
 
     created(){
-    this.getCategory()
     }, 
 
     methods:{
@@ -304,16 +303,18 @@ export default {
     cancelBtn: function(){
                 this.validated = false
                 this.disabled = false
+                this.button = this.btntxt
     },
     validateForm: function(){
         $(".toaster").toast('hide')
         this.errors = '';
         if(this.toUpload.length > 0 && this.validated) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
         }else if(this.toUpload.length > 0 && !this.validated) {
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
         }else{
             this.validated = false
             this.disabled = false;
@@ -323,7 +324,7 @@ export default {
 
     },
 
-    sendForm: function(){
+    sendPost: function(){
         this.clearRecord();
         this.button='Please wait...';
         $(".toaster").toast('hide')
@@ -412,31 +413,6 @@ export default {
 
     },
 
-
-    getCategory: function(){
-        $(".toaster").toast('hide')
-        this.showOverlay=true;
-        axios.get('/accessgroup/list', {params:this.parameters}).then(response => {
-            this.button=this.btntxt;
-            this.showOverlay=false;
-            this.errors = '';
-            if(response.status != undefined && response.status==200 && response['data'].data.status=='success'){
-            this.category_list = response['data'].data.info
-            }else if(response['data'].data.status=='norecord'){
-            this.category_list = ''
-            this.alertMsg=''
-            }else{
-            this.alertMsg=response['data'].data.msg;
-            $("#alertDanger").toast('show')
-            }
-        }).catch(error => {
-            this.button=this.btntxt;
-            this.showOverlay=false;
-            this.errors = '';
-            this.alertMsg='Something went wrong! Please refresh and try again or report this error.'
-            $("#alertDanger").toast('show')
-        })
-    },
 
 
     },

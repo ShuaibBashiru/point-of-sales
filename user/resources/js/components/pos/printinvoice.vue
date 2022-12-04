@@ -2,8 +2,8 @@
 <div class="">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
 <div class="container-fluid">
-<!--  Receipt -->
-<div class="modal fade" id="printInvoiceModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newRoleModalLabel" aria-hkeyden="true">
+<error-alert :message="error_message" />
+<div class="modal fade" id="printInvoiceModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newRoleModalLabel" aria-hiden="true">
 <div class="modal-dialog ps-md-3 pe-md-3">
     <div class="modal-content">
       <div class="modal-header">
@@ -12,7 +12,6 @@
       </div>
       <div class="modal-body">
         <div class="col-md-12">
-        <p class="text-info text-center" v-text="progressResponse"></p>
         <p class="text-info text-center m-0 p-0 d-none" v-text="getInvoice"></p>
         </div>
         <div class="row mt-3" id="printable">
@@ -25,8 +24,8 @@
         <div class="mt-1 mb-2 border p-3">
           <div class="row">
             <div class="col-12 text-center">
-            <h4 class="bolder"> <span v-html="settings.appname"></span> </h4>
-             <p class="m-0"><small><span></span> <span v-html="settings.address"></span></small></p>
+            <h4 class="bolder"> <span v-html="settings.site_name"></span> </h4>
+             <p class="m-0"><small><span></span> <span v-html="settings.office_address"></span></small></p>
             <p class="m-0"><small><span>Phone: </span> <span v-html="settings.phone_one"></span></small></p>
             </div>
             <div class="col-12 text-center">
@@ -116,14 +115,15 @@
 </template>
 
 <script>
-import appsettings from '../json/myapp.json'
+import appsettings from '/storage/settings/app.json'
 export default {
     name: 'pointOfSalePrint',
-    props: ['server_message', 'invoice_id'],
+    props: ['server_message', 'invoice_id', 'timeInterval'],
     data (){
         return{
         pageName: 'POS Print',
-        settings: appsettings.settings,
+        settings: appsettings,
+        error_message: '',
         alertTitle: '',
         alertMsg: '',
         status: 0,
@@ -131,13 +131,13 @@ export default {
         usersession: [],
         info: [],
         summary: [],
-        progressResponse: 'Please wait...',
         button: 'Preview',
         btntxt: 'Preview',
         responseStatus: '',
         errors: [],
         statuses: [],
         errorResponse: '',
+        setTimeInterVal: '',
         options:{
             lineColor: '#ff7069',
             fontSize: 32,
@@ -162,7 +162,8 @@ export default {
 
     computed:{
         getInvoice:function(){
-            this.parameters.invoice_number = this.invoice_id
+            this.parameters.invoice_number = this.invoice_id;
+            this.setTimeInterVal = this.timeInterval;
             this.getLists();
             return true;
         }
@@ -183,11 +184,11 @@ export default {
          if (this.$session.get('usersession')!=undefined && this.$session.get('usersession')!='') {
             this.usersession = this.$session.get('usersession')
          }else{
-            this.progressResponse='Something went wrong! Please log out and log in again to continue.'
+            this.error_message='Something went wrong! Please log out and log in again to continue.'
             $("#alertDanger").toast('show')
          }
           } catch (error) {
-            this.progressResponse='Error connecting! Please log out and log in again to continue.'
+            this.error_message='Error connecting! Please log out and log in again to continue.'
             $("#alertDanger").toast('show')
           }
     },
@@ -202,32 +203,37 @@ export default {
 
 
     getLists: function(){
-        this.progressResponse = 'Please wait...'
+    if (this.parameters.invoice_number != ''){
+        this.showOverlay=true;
         axios.get('/pos/invoice', {params:this.parameters}).then(response => {
             this.errors = '';
+            this.showOverlay=false;
             if((response.status != undefined && response.status==200) && (response['data'].data.status==response['data'].data.statusmsg)){
             this.info = response['data'].data.info
             this.summary = response['data'].data.summary
-            this.progressResponse=''
+            this.error_message=''
+            $("#printInvoiceModal").modal('show')
             }else if(response['data'].data.status=='norecord'){
-            this.responseStatus = response['data'].data.msg
+            this.error_message = response['data'].data.msg
             this.info = ''
             this.summary = ''
-            this.progressResponse='No sales record yet! Continue selling and confirm order'
+            this.error_message='No sales record yet! Continue selling and confirm order'
             }else{
-            this.progressResponse=response['data'].data.msg;
+            this.error_message=response['data'].data.msg;
             }
         }).catch(error => {
+            this.showOverlay=false;
             if(error.response != undefined && error.response.status==422){
-                this.progressResponse='Something went wrong! Kindly confirm and correct the error(s) before you continue.'
+                this.error_message='Something went wrong! Kindly confirm and correct the error(s) before you continue.'
             } else if(error.response != undefined && error.response.status==419){
-                this.progressResponse='This page has been inactive for long, Kindly refresh and try again.';
+                this.error_message='This page has been inactive for long, Kindly refresh and try again.';
             }else if(error.response != undefined && error.response.status==500){
-                this.progressResponse='Internal server error! Please refresh and try again or report this error.';
+                this.error_message='Internal server error! Please refresh and try again or report this error.';
             }else{
-                this.progressResponse='Access restricted or Network error! Please refresh and try again or report this error.';
+                this.error_message='Access restricted or Network error! Please refresh and try again or report this error.';
             }
         })
+    }
     },
 
 

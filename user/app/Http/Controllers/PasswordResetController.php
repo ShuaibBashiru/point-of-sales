@@ -154,11 +154,11 @@ class PasswordResetController extends Controller
             "date_created" =>  date("Y-m-d"),
             "time_created" =>  date("h:s:i"),
          ];
-
+         $link = request()->getSchemeAndHttpHost().'/password/new/'.base64_encode(base64_encode($data['_token'])).'/'.base64_encode(base64_encode($data['user_email']));
          $info = [ 
             'copyright' => $fileInfo['copyright'],
             'viewName' => 'passwordResetToken',
-            'link' => '/password/new/'.base64_encode(base64_encode($data['_token'])).'/'.base64_encode(base64_encode($data['user_email'])),
+            'link' => $link,
          ];
          $checkdata = $this->checkID($data);
          if ($checkdata['status']) {
@@ -239,6 +239,7 @@ class PasswordResetController extends Controller
          'token' => $data['_token'],
          'viewName' => $info['viewName'],
          'link' => $info['link'],
+         "site_link" => request()->getSchemeAndHttpHost(),
       ];
       // return true;
       Mail::queue(new SendMail($mailData));

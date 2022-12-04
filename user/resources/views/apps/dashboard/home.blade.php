@@ -19,7 +19,7 @@
            
         <!-- Body component(s) -->
             <div class="col-md p-0 mt-5">
-            <div class="mb-5 mt-3">
+            <div class="mb-5 mt-4">
                 
                 <dashboard :server_message="{{ session('message') ?? $message ?? json_encode('') }}"></dashboard>
             </div>

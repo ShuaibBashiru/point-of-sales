@@ -19,7 +19,7 @@
            
         <!-- Body component(s) -->
             <div id="contentPanel" class="col-md-10 p-0 mt-5">
-            <div class="mb-5 mt-3">
+            <div class="mb-5 mt-4">
                 
            <admin_menu_record :server_message="{{ session('message') ?? $message ?? json_encode('') }}"></admin_menu_record>
            <create_admin_menu> </create_admin_menu>

@@ -80,7 +80,7 @@
                 <div class="input-group">
                     <input type="file" id="file" @change="onFileSelected" class="form-control shadow-none" accept=".xlsx, .csv" required :disabled="validated ? disabled : false">
                 </div>
-                <span class="text-danger" for="" v-if="errors.filename && errors.filename != ''"><small> <i class="bi bi-x-circle-fill"></i> <span v-text="errors.filename[0]"></span> </small></span>
+                <span class="text-danger" for="" v-if="errors.upload_file && errors.upload_file != ''"><small> <i class="bi bi-x-circle-fill"></i> <span v-text="errors.upload_file[0]"></span> </small></span>
                 </div>
         </div>
     <div class="col-md-12">
@@ -134,13 +134,13 @@
         </thead>
         <tbody>
         <tr v-for="(d, index) in info.slice(startNumber, endNumber)" :key="index">
-            <td class="col text-truncate" v-html="d.personal_id? d.personal_id : '<em class=text-danger>None</em>'"></td>
-            <td class="col text-truncate" v-html="d.lastname? d.lastname + ' ' + d.firstname + ' ' + d.othername : '<em class=text-danger>None</em>'"></td>
-            <td class="col text-truncate" v-html="d.email_one? d.email_one : '<em class=text-danger>None</em>'"></td>
-            <td class="col text-truncate" v-html="d.phone_one? d.phone_code + d.phone_one : '<em class=text-danger>None</em>'"></td>
-            <td class="col text-truncate" v-html="(d.gender_id==1? 'Male' : '') || (d.gender_id==2? 'Female' : '<em class=text-danger>Unknown</em>')"></td>
-            <td class="col text-truncate" v-html="d.date_of_birth? d.date_of_birth : '<em class=text-danger>None</em>'"></td>
-            <td class="col text-truncate"> <strong><small v-html="d.upload_status ? d.upload_status : 'New'"></small></strong> </td>
+            <td class="" v-html="d.personal_id? d.personal_id : '<em class=text-danger>None</em>'"></td>
+            <td class="" v-html="d.lastname? d.lastname + ' ' + d.firstname + ' ' + d.othername : '<em class=text-danger>None</em>'"></td>
+            <td class="" v-html="d.email_one? d.email_one : '<em class=text-danger>None</em>'"></td>
+            <td class="" v-html="d.phone_one? d.phone_code + d.phone_one : '<em class=text-danger>None</em>'"></td>
+            <td class="" v-html="(d.gender_id==1? 'Male' : '') || (d.gender_id==2? 'Female' : '<em class=text-danger>Unknown</em>')"></td>
+            <td class="" v-html="d.date_of_birth? d.date_of_birth : '<em class=text-danger>None</em>'"></td>
+            <td class=""> <strong><small v-html="d.upload_status ? d.upload_status : 'New'"></small></strong> </td>
         </tr>
 
         </tbody>
@@ -183,7 +183,7 @@ export default {
         responseStatus: '',
         usersession: [],
         category_list: [],
-        filename: '',
+        upload_file: '',
         filterlist: '',
         search: '',
         checked: true,
@@ -208,7 +208,7 @@ export default {
         parameters:{
             records: '',
             categoryId: 1,
-            filename: '',
+            upload_file: '',
             sessionID: '',
             programmeID: '',
             levelID: '',
@@ -303,16 +303,18 @@ export default {
     cancelBtn: function(){
                 this.validated = false
                 this.disabled = false
+                this.button = this.btntxt
     },
     validateForm: function(){
         $(".toaster").toast('hide')
         this.errors = '';
         if(this.toUpload.length > 0 && this.validated) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
         }else if(this.toUpload.length > 0 && !this.validated) {
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
         }else{
             this.validated = false
             this.disabled = false;
@@ -322,7 +324,7 @@ export default {
 
     },
 
-    sendForm: function(){
+    sendPost: function(){
         this.clearRecord();
         this.button='Please wait...';
         $(".toaster").toast('hide')

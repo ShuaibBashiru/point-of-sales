@@ -7,7 +7,7 @@
     <div class="col-md-5 mt-2 ps-md-5 pe-md-5">
       <server-alert :server_message="server_message" />
     <div class="wrap-img text-center">
-    <a class="navbar-brand p-0 m-0" href="#"><img :src="settings.logo" class="img-responsive rounded" :style="'width:'+settings.logoHeight+'; ' + 'height:'+settings.logoHeight+';'"  alt="image"> <br/> <span class="fs-4 text-primary" v-text="settings.appname"></span> </a>
+    <a class="navbar-brand p-0 m-0" href="#"><img :src="settings.logo_link" class="img-responsive rounded logoSize2"  alt="image"> <br/> <span class="fs-4 text-light" v-text="settings.site_name"></span> </a>
      </div>
       <form @submit.prevent="changePassword" role="form" class="p-2"> 
     <div class="m-1 mt-3">
@@ -39,7 +39,7 @@
 
     <div class="form-group mt-2 col">
         <small class="text-muted">
-            Make sure it's at least 8 characters OR more including a number, uppercase, lowercase letter and special symbol.
+            Make sure it's at least 8 characters or more including a number, uppercase, lowercase letter and special symbol.
         </small>
     </div>
 
@@ -57,7 +57,9 @@
 <div class="row">
   <div class="col-12">
     <div class="row">
-      <div class="col-12 text-center"><a href="/signin" class="text-primary">Return to login</a></div>
+      <div class="col-12 text-center">
+        <p><a href="/signin" class="text-light linkUnderlineHover text-center" style="opacity:0.7;">Return to login</a></p>
+    </div>
     </div>
   </div>
 </div>
@@ -78,13 +80,13 @@
 </div>
 </template>
 <script>
-import appsettings from '../json/myapp.json'
+import appsettings from '/storage/settings/app.json'
 export default {
     name: 'account_changePassword',
     props: ['server_record', 'server_message'],
     data(){
       return{
-          settings: appsettings.settings,
+          settings: appsettings,
           alertTitle: '',
           alertMsg: '',
           showOverlay: false,
@@ -104,7 +106,7 @@ export default {
               token: '',
               agree: '',
           },
-          toggle:null,
+          toggle: null,
           pass_type: 'password',
             }
 

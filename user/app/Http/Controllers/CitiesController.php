@@ -12,7 +12,7 @@ class CitiesController extends Controller
     
     public function manage($id){
         if (isset($_COOKIE['manageUser']) && ($id === $_COOKIE['manageUser'])) {
-        $id = base64_decode(base64_decode($id));
+         // 
         $record = $this->record($id);
         if ($record['status']=='success') {
             $record = $record['info'];
@@ -35,7 +35,7 @@ class CitiesController extends Controller
 
     public function edit_name($id){
         if (isset($_COOKIE['manageUser']) && ($id === $_COOKIE['manageUser'])) {
-            $id = base64_decode(base64_decode($id));
+             // 
             $record = $this->record($id);
             if ($record['status']=='success') {
                 $record = $record['info'];

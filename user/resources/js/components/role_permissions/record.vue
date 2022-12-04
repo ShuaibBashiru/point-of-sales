@@ -114,7 +114,7 @@
     <table class="table table-hover table-bordered" id="listTable">
         <thead>
         <tr>
-            <th scope="col-1" class="text-truncate text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
+            <th scope="col-1" class="text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
             <th scope="col" class="text-truncate" @click="sortOrder('routeLink')" title="">Route <i class="bi bi-sort-down float-end"></i></th>
             <th scope="col" class="text-truncate" @click="sortOrder('title')" title="">Title <i class="bi bi-sort-down float-end"></i></th>
             <th scope="col" class="text-truncate" @click="sortOrder('descriptions')" title="">Description <i class="bi bi-sort-down float-end"></i></th>
@@ -123,11 +123,11 @@
         </thead>
         <tbody>
         <tr v-for="(d, index) in info.slice(startNumber, endNumber)" :key="index">
-            <td class="col text-truncate text-center"> <input type="checkbox" id="" :value="d.id" v-model="parameters.selectedList" name="checkbox" @change="checkBoxOnChange"></td>
-            <td class="col text-truncate" v-html="d.routeLink ? d.routeLink : ''"></td>
-            <td class="col text-truncate" v-html="d.title ? d.title : ''"></td>
-            <td class="col text-truncate" v-html="d.descriptions ? d.descriptions : ''"></td>
-            <td class="col text-truncate text-center"><i class="bi bi-check-square text-primary" v-if="rolePermissions.includes(d.id)"></i> <i v-else class="bi bi-x-square text-danger"></i></td>
+            <td class="text-center"> <input type="checkbox" id="" :value="d.id" v-model="parameters.selectedList" name="checkbox" @change="checkBoxOnChange"></td>
+            <td class="" v-html="d.routeLink ? d.routeLink : ''"></td>
+            <td class="" v-html="d.title ? d.title : ''"></td>
+            <td class="" v-html="d.descriptions ? d.descriptions : ''"></td>
+            <td class="text-center"><i class="bi bi-check-square text-primary" v-if="rolePermissions.includes(d.id)"></i> <i v-else class="bi bi-x-square text-danger"></i></td>
         </tr>
             
         </tbody>
@@ -199,8 +199,9 @@ export default {
         parameters:{
             selectedList: [],
             status: '',
-            role_id: this.role_record.id,
-            role_name: this.role_record.role_name,
+            role_id: '',
+            role_name: '',
+            access_permission_id: '',
         },
         errors: [this.parameters],
         form_success: [],
@@ -208,7 +209,8 @@ export default {
     },
 
     created(){
-    this.getRecords()
+    this.getRoleRecord();
+    this.getRecords();
     },
 
     computed:{
@@ -219,6 +221,11 @@ export default {
     },
         
     methods:{
+
+    getRoleRecord: function(){
+        this.parameters.role_id = this.role_record.id;
+        this.parameters.role_name = this.role_record.role_name;
+    },
 
    validateForm: function(){
     this.alertMsg=''
@@ -278,7 +285,7 @@ export default {
         })
     },
 
-setLanding: function(){
+    setLanding: function(){
         if(this.parameters.selectedList.length < 1){
             $("#alertDanger").toast('show')
             this.alertMsg="No item is selected!"
@@ -292,6 +299,7 @@ setLanding: function(){
         $(".toaster").toast('hide')
         this.showOverlay=true;
         this.alertMsg = '';
+        this.parameters.access_permission_id = this.parameters.selectedList[0]
         axios.post('/rolepermission/sethomepage', this.parameters).then(response => {
             this.button=this.btntxt;
             this.showOverlay=false;
@@ -379,13 +387,17 @@ setLanding: function(){
         })
     },
 
+    encodeData: function(data){
+        var decode = btoa(btoa(data));
+        return decode;
+    },
     exportToExcel: function(){
             if (this.info.length > 0) {
             var pageName = this.pageName
             var ext = '.xlsx'
-            var filename = pageName+ext
+            var upload_file = pageName+ext
             var d = new Date()
-            filename = d.toDateString()+'_'+d.toLocaleTimeString()+'_'+filename
+            upload_file = d.toDateString()+'_'+d.toLocaleTimeString()+'_'+upload_file
             var info = this.info
             for (let index = 0; index < info.length; index++) {
                 delete info[index].generated_id
@@ -393,7 +405,7 @@ setLanding: function(){
             var worksheet = XLSX.utils.json_to_sheet(info)
             var workbook = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(workbook, worksheet, "Records")
-            XLSX.writeFile(workbook, filename)
+            XLSX.writeFile(workbook, upload_file)
             }else{
             $("#alertDanger").toast('show')
             this.alertMsg = 'Empty record cannot be exported.'

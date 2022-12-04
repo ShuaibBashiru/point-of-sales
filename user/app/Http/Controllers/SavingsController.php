@@ -27,7 +27,7 @@ class SavingsController extends Controller
         $returnData = '';
         $result = [];
         $query = Users::from('users_record as t1')
-                    ->where('t1.deleted_status', '=', '0')
+                    ->where('t1.deleted_status', '=', 0)
                     ->where('t1.generated_id', $id)
                     ->leftJoin('statuses as t2', 't2.id', '=', 't1.status_id')
                     ->leftJoin('genders as t3', 't3.id', '=', 't1.gender_id')
@@ -125,28 +125,28 @@ class SavingsController extends Controller
         if (!isset($_COOKIE['manageUser']) || ($id != $_COOKIE['manageUser'])) {
             return redirect()->route('dashboard');
         }else{
-        $id = base64_decode(base64_decode($id));
+         // 
         $record = $this->record($id);
         $savings = $this->savings($record['info']['user_id']);
         $d = new dateTime();
         $timeseries = str_shuffle($d->format('Ymdhis'));
-        $filename = $record['info']['lastname'].'_'.$record['info']['firstname']
+        $upload_file = $record['info']['lastname'].'_'.$record['info']['firstname']
         .'_'.$record['info']['personal_id'];
         $fileInfo=$this->fileInfo();
         $data = [
             "dated" => $d->format('d-m-Y'),
             "title" => "Savings",
-            "headerName" => $fileInfo['headerName'],
+            "headerName" => $fileInfo['site_name'],
             "owner" => $fileInfo['owner'],
             "user_info" => $record['info'],
             "savings" => $savings['info'],
         ];
-        $filename = $data['title'].'_'.$record['info']['lastname'].'_'.$record['info']['firstname']
+        $upload_file = $data['title'].'_'.$record['info']['lastname'].'_'.$record['info']['firstname']
         .'_'.$record['info']['personal_id'];
 
         return view('apps.savings.SavingsPdf', compact('data'));
         $pdf = PDF::setOptions(['defaultFont' => 'sans-serif'], ['isRemoteEnabled' => true])->loadView('apps.savings.SavingsPdf', compact('data'));
-        return $pdf->stream($filename.'.pdf');
+        return $pdf->stream($upload_file.'.pdf');
     }    
     } 
 

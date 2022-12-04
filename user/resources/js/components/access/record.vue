@@ -107,39 +107,26 @@
     <table class="table table-hover table-bordered" id="listTable">
         <thead>
         <tr>
-            <th scope="col-1" class="text-truncate text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
+            <th scope="col" class="text-truncate text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
             <th scope="col" class="text-truncate" @click="sortOrder('routeLink')" title="">URL <i class="bi bi-sort-down float-end"></i></th>
             <th scope="col" class="text-truncate" @click="sortOrder('route_name')" title="">Route Name <i class="bi bi-sort-down float-end"></i></th>
-            <th scope="col" class="text-truncate" @click="sortOrder('title')" title="">Title <i class="bi bi-sort-down float-end"></i></th>
-            <th scope="col" class="text-truncate" @click="sortOrder('descriptions')" title="">Description <i class="bi bi-sort-down float-end"></i></th>
+            <th scope="col" class="text-truncate" @click="sortOrder('descriptions')" title="">Title/Description <i class="bi bi-sort-down float-end"></i></th>
             <th scope="col" class="text-truncate" @click="sortOrder('status_id')" title="Status"> Status <i class="bi bi-sort-down float-end"></i></th>
-            <th scope="col" class="text-truncate text-center" title="Action"> <i class="bi bi-three-dots"></i></th>
+            <th scope="col" class="text-truncate text-center" title="Action"> Manage </th>
        </tr>
         </thead>
         <tbody>
 
         <tr v-for="(d, index) in info.slice(startNumber, endNumber)" :key="index">
-            <td class="col-1 text-truncate text-center"><input type="checkbox" id="" :value="d.generated_id" v-model="parameters.selectedList" name="checkbox" @change="checkBoxOnChange"></td>
-            <td class="col text-truncate" v-html="d.routeLink ? d.routeLink : ''"></td>
-            <td class="col text-truncate" v-html="d.route_name ? d.route_name : ''"></td>
-            <td class="col text-truncate" v-html="d.title ? d.title : ''"></td>
-            <td class="col text-truncate" v-html="d.descriptions ? d.descriptions : ''"></td>
-            <td class="col text-truncate" v-if="d.status_name=='Active'"><small class="text-dark" v-text="d.status_name"></small></td>
-            <td class="col text-truncate" v-else><span class="text-danger" v-text="d.status_name"></span></td>
-            <td class="col text-center">
-            <div class="dropdown dropstart">
-                <span class="bi bi-caret-down ps-2" data-bs-toggle="dropdown" :id="'dropdownMenuButton'+index" aria-expanded="false"></span>
-            <div class="dropdown-menu w-75 mt-0 pt-0" :aria-labelledby="'dropdownMenuButton'+index" style="width: 200px !important;">
-            <ul class="list-unstyled pb-1 border-bottom" onclick="event.stopPropagation()">
-            <li class="mb-2 text-center bg-dark p-1 text-white" v-html="d.routeLink"></li>
-            <li class="p-1 text-danger"> <a class="link ps-2 mb-2 dropdown-item" :href="'manage/'+d.generated_id"> <i class="bi bi-link"></i> <span>Manage</span></a>
-            </li>
-            </ul>
-            </div>
-            </div>
-            <!-- Dropdown -->
+            <td class="text-center"><input type="checkbox" id="" :value="d.generated_id" v-model="parameters.selectedList" name="checkbox" @change="checkBoxOnChange"></td>
+            <td class="" v-html="d.routeLink ? d.routeLink : ''"></td>
+            <td class="" v-html="d.route_name ? d.route_name : ''"></td>
+            <td class=""><span v-html="d.title ? d.title : ''"></span> / <span v-html="d.descriptions ? d.descriptions : ''"></span></td>
+            <td class="" v-if="d.status_name=='Active'"><small class="text-dark" v-text="d.status_name"></small></td>
+            <td class="" v-else><span class="text-danger" v-text="d.status_name"></span></td>
+            <td class="text-center">
+            <a class="link btn btn-sm btn-primary" :href="'manage/'+encodeData(d.generated_id)"> <span class="bi bi-gear"></span> </a>
             </td>
-     
         </tr>
             
         </tbody>
@@ -164,6 +151,12 @@
 
 </div>
 </template>
+
+<style>
+    /* thead th{
+        font-size: 12px;
+    } */
+</style>
 
 <script>
 import * as XLSX from 'xlsx';
@@ -246,17 +239,20 @@ resetForm: function(){
    cancelBtn: function(){
             this.validated = false
             this.disabled = false
+            this.button = this.btntxt
    },
    validateForm: function(){
         $(".toaster").toast('hide')
         this.errors = '';
         if(this.validated) {
-            this.sendForm()
+            this.sendPost()
             this.validated = false
             this.disabled = false;
         }else if(!this.validated) {
             this.disabled = true;
-            this.validated = true
+            this.validated = true;
+            this.button = "Continue";
+            this.button = "Continue"
         }else{
             this.validated = false
             this.disabled = false;
@@ -270,7 +266,7 @@ resetForm: function(){
             var newString = str.replace(/^\s+|\s+$/gm, '')
             this.parameters[key] = newString
     },
-    sendForm: function(){
+    sendPost: function(){
         this.button='Please wait...';
         $(".toaster").toast('hide')
         this.showOverlay=true;
@@ -318,13 +314,17 @@ resetForm: function(){
         })
     },
 
+    encodeData: function(data){
+        var decode = btoa(btoa(data));
+        return decode;
+    },
     exportToExcel: function(){
             if (this.info.length > 0) {
             var pageName = this.pageName
             var ext = '.xlsx'
-            var filename = pageName+ext
+            var upload_file = pageName+ext
             var d = new Date()
-            filename = d.toDateString()+'_'+d.toLocaleTimeString()+'_'+filename
+            upload_file = d.toDateString()+'_'+d.toLocaleTimeString()+'_'+upload_file
             var info = this.info
             for (let index = 0; index < info.length; index++) {
                 delete info[index].generated_id
@@ -332,7 +332,7 @@ resetForm: function(){
             var worksheet = XLSX.utils.json_to_sheet(info)
             var workbook = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(workbook, worksheet, "Records")
-            XLSX.writeFile(workbook, filename)
+            XLSX.writeFile(workbook, upload_file)
             }else{
 
             $("#alertDanger").toast('show')

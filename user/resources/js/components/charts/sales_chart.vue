@@ -71,6 +71,7 @@
       </div>
        <div class="row overflow-hidden m-0 mt-2 mb-2">
         <div class="col-md-12">
+          <p class="text-warning" v-if="norecord"><em v-text="norecordText"></em></p>
             <section v-if="info.length > 0">
             <GChart class="chart" 
               type="ColumnChart" 
@@ -120,6 +121,8 @@ export default {
         errors: [],
         selectionTotal: 0,
         years: [],
+        norecord: false,
+        norecordText: '',
         parameters:{
             year: '',
             month: '',
@@ -181,13 +184,12 @@ export default {
     this.getRecords();
   },
   mounted(){
-        this.refresh();
   },
   methods:{
 
     getDateInfo: function(){
       var d = new Date();
-      var m = d.getMonth().toString().length === 1?  d.getMonth()+1 : d.getMonth();
+      var m = parseInt(d.getMonth()) + 1;
       var month = m.toString().length===1? '0'+m.toString() : m.toString();
       var day = d.getDate().toString().length===1? '0'+d.getDate().toString() : d.getDate().toString()
       this.todayDate = d.getFullYear() + '-' + month + '-' +day;
@@ -211,7 +213,7 @@ export default {
             this.info = response['data'].data.info;
             this.totalRecord = response['data'].data.info;
             this.allSales = response['data'].data.sales;
-            this.plotChart();
+            this.refreshChart();
             this.button=this.btntxt;
             this.loadStatus=true;
             }else if(response['data'].data.status=='norecord'){
@@ -242,7 +244,7 @@ export default {
         })
     },
   
-  refresh: function(){
+  refreshChart: function(){
        this.plotChart()
   },  
 
@@ -308,6 +310,8 @@ export default {
     this.chartSummary.push(['Month', 'Total sales']);
     this.chartOptions.summary.title = "Total sales by Months";
           var data = this.sortData(this.parameters.year, this.info);
+          this.norecord = data== '' ? true : false;
+          this.norecordText = data == '' ? 'No Record(s) found' : '';
           const grouped = _.groupBy(data, info => info.date_created.substring(5, 7));
           for (var key in grouped){
           var total = 0;

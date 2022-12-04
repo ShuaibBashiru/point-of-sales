@@ -5,9 +5,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
     body{
-        font-size: 18px;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+   
     .container{
         width: 80%;
         height: auto;
@@ -18,6 +18,13 @@
         padding-left: 25px;
         padding-right: 25px;
     }
+    .content p{
+      font-size: 16px;
+    }
+    .containerFooter p{
+      font-size: 13px;
+    }
+ 
     ul {
     list-style-type: none;
     margin: 0;

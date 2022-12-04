@@ -2,7 +2,7 @@
 <div class="">
     <b-overlay class="position-fixed w-100 h-100" :show="showOverlay" no-wrap spinner-variant="primary" rounded="sm" spinner-type="border" z-index="999999" />
       <notification :alertTitle="alertTitle" :alertMsg="alertMsg" />  
-    <printinvoice :invoice_id="parameters.invoice_number" />  
+    <printinvoice :invoice_id="parameters.invoice_number" :timeInterval="timeInterval" />  
 <div class="container-fluid">
     <server-alert :server_message="server_message" />
     <a href="#" id="topLink"></a>
@@ -55,25 +55,25 @@
     <table class="table table-hover table-bordered" id="listTable">
         <thead>
         <tr>
-            <th scope="col-1" class="text-truncate text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
+            <th scope="col-1" class="text-center"> <input type="checkbox" name="checkAll" v-model="selectToggleValue" @click="selectToggle"> </th>
             <th scope="col" class="text-truncate" @click="sortOrder('invoice_number')" title="">Invoice Number <i class="bi bi-sort-down float-end"></i></th>
             <th scope="col" class="text-truncate" title="soldTo">Customer</th>
             <th scope="col" class="text-truncate" title="attendant">Attendant</th>
             <th scope="col" class="text-truncate" title="total price">Total</th>
             <th scope="col" class="text-truncate" title="date_created">Date Created</th>
-            <th scope="col" class="text-truncate text-center" title="Action"> <i class="bi bi-three-dots"></i></th>
+            <th scope="col" class="text-truncate text-center" title="Action"> Receipt </th>
         </tr>
         </thead>
         <tbody>
 
         <tr v-for="(d, index) in info.slice(startNumber, endNumber)" :key="index">
-            <td class="col-1 text-truncate text-center"><input type="checkbox" id="" :value="d.generated_id" v-model="parameters.selectedList" name="checkbox" @change="checkBoxOnChange"></td>
-            <td class="col text-truncate" v-html="d.invoice_number ? d.invoice_number : ''"></td>
-            <td class="col text-truncate" v-html="d.soldTo ? d.soldTo : ''"></td>
-            <td class="col text-truncate" v-html="d.attendant ? d.attendant : ''"></td>
-            <td class="col text-truncate" v-html="d.totalPrice ? d.totalPrice : ''"></td>
-            <td class="col text-truncate" v-html="d.date_created ? d.date_created +' '+ d.time_created : ''"></td>
-            <td class="col text-center">
+            <td class="col-1 text-center"><input type="checkbox" id="" :value="d.generated_id" v-model="parameters.selectedList" name="checkbox" @change="checkBoxOnChange"></td>
+            <td class="" v-html="d.invoice_number ? d.invoice_number : ''"></td>
+            <td class="" v-html="d.soldTo ? d.soldTo : ''"></td>
+            <td class="" v-html="d.attendant ? d.attendant : ''"></td>
+            <td class="" v-html="d.totalPrice ? d.totalPrice : ''"></td>
+            <td class="" v-html="d.date_created ? d.date_created +' '+ d.time_created : ''"></td>
+            <td class="text-center">
                 <button type="button" class="btn btn-outline-primary" @click="print(d.invoice_number)" :disabled="disabled"> Print <i class="bi bi-printer"></i></button> 
             </td>
         </tr>
@@ -139,6 +139,7 @@ export default {
         search: '',
         checks: [],
         statuses: [],
+        timeInterval: '',
         parameters:{
             selectedList: [],
             status: '',
@@ -163,16 +164,20 @@ export default {
     methods:{
         print: function(id){
             this.parameters.invoice_number = id;
-            $("#printInvoiceModal").modal('show')
+            this.timeInterval = Date.now();
         },
 
+    encodeData: function(data){
+        var decode = btoa(btoa(data));
+        return decode;
+    },
     exportToExcel: function(){
             if (this.info.length > 0) {
             var pageName = this.pageName
             var ext = '.xlsx'
-            var filename = pageName+ext
+            var upload_file = pageName+ext
             var d = new Date()
-            filename = d.toDateString()+'_'+d.toLocaleTimeString()+'_'+filename
+            upload_file = d.toDateString()+'_'+d.toLocaleTimeString()+'_'+upload_file
             var info = this.info
             for (let index = 0; index < info.length; index++) {
                 delete info[index].generated_id
@@ -180,7 +185,7 @@ export default {
             var worksheet = XLSX.utils.json_to_sheet(info)
             var workbook = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(workbook, worksheet, "Records")
-            XLSX.writeFile(workbook, filename)
+            XLSX.writeFile(workbook, upload_file)
             }else{
 
             $("#alertDanger").toast('show')
